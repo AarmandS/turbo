@@ -4,32 +4,42 @@ import 'package:flutter/material.dart';
 import '../models/file_model.dart';
 import '../network_service.dart';
 
-part 'folder_state.dart';
+part 'directory_state.dart';
 
-class FolderCubit extends Cubit<FolderState> {
+class DirectoryCubit extends Cubit<DirectoryState> {
   late NetworkService _networkService;
   String navigationPath = '';
-  FolderCubit(NetworkService networkService) : super(FolderInitial([], [])) {
+  DirectoryCubit(NetworkService networkService)
+      : super(DirectoryInitial([], [])) {
     _networkService = networkService;
   }
 
-  void createFolder(String name) async {
-    await _networkService.createFolder('$navigationPath/$name');
-    // handle unsuccesful folder creation
-    state.folders.add(name);
-    emit(FolderRefresh(state.folders, state.files));
+  void createDirectory(String name) async {
+    await _networkService.createDirectory('$navigationPath/$name');
+    // handle unsuccesful directory creation
+    state.directories.add(name);
+    emit(DirectoryRefresh(state.directories, state.files));
   }
 
-  void navigateToFolder(String path) async {
+  void deleteDirectory(String name) async {
+    _networkService.deleteDirectory('$navigationPath/$name');
+    // handle unsuccesful directory deletion
+    state.directories.remove(name);
+    emit(DirectoryRefresh(state.directories, state.files));
+  }
+
+  void navigateToDirectory(String path) async {
     navigationPath = path;
-    await _networkService.getFolder(navigationPath).then((folderModel) async {
+    await _networkService
+        .getDirectory(navigationPath)
+        .then((directoryModel) async {
       var fileModels =
-          await Future.wait(folderModel.containedFiles.map((filePath) async {
+          await Future.wait(directoryModel.containedFiles.map((filePath) async {
         FileModel file =
             await _networkService.getFile('$navigationPath/$filePath');
         return file;
       }).toList());
-      emit(FolderRefresh(folderModel.containedFolders, fileModels));
+      emit(DirectoryRefresh(directoryModel.containedDirectorys, fileModels));
     });
   }
 
@@ -38,7 +48,7 @@ class FolderCubit extends Cubit<FolderState> {
     if (pathParts.length > 1) {
       pathParts.removeLast();
       navigationPath = pathParts.join('/');
-      navigateToFolder(navigationPath);
+      navigateToDirectory(navigationPath);
     }
   }
 
@@ -52,7 +62,7 @@ class FolderCubit extends Cubit<FolderState> {
     if (success) {
       await _networkService.getFile('$navigationPath/$name').then((fileModel) {
         state.files.add(fileModel);
-        emit(FolderRefresh(state.folders, state.files));
+        emit(DirectoryRefresh(state.directories, state.files));
       });
     }
   }

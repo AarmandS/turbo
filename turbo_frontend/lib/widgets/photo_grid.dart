@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:turbo/models/file_model.dart';
 import 'package:turbo/widgets/photo.dart';
 
-import '../cubit/folder_cubit.dart';
+import '../cubit/directory_cubit.dart';
 
 class PhotoGrid extends StatelessWidget {
   final List<FileModel> photos;
@@ -11,7 +11,7 @@ class PhotoGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var folderCubit = context.read<FolderCubit>();
+    var directoryCubit = context.read<DirectoryCubit>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -34,7 +34,7 @@ class PhotoGrid extends StatelessWidget {
               // not the best null safety practice fix this
               return Photo(
                 name: photos[index].mediaUrl,
-                image: folderCubit.getImage(photos[index].mediaUrl)!,
+                image: directoryCubit.getImage(photos[index].mediaUrl)!,
               );
             }),
       ],

@@ -4,7 +4,7 @@ import 'package:turbo/models/file_model.dart';
 import 'package:turbo/widgets/photo.dart';
 import 'package:turbo/widgets/video.dart';
 
-import '../cubit/folder_cubit.dart';
+import '../cubit/directory_cubit.dart';
 
 class VideoGrid extends StatelessWidget {
   final List<FileModel> videos;

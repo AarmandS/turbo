@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:turbo/cubit/folder_cubit.dart';
+import 'package:turbo/cubit/directory_cubit.dart';
 import 'package:turbo/widgets/action_buttons.dart';
 import 'package:turbo/widgets/title_bar.dart';
 
@@ -39,7 +39,7 @@ class Sidebar extends StatelessWidget {
                 ),
                 onPressed: () {
                   context.read<AuthCubit>().logout();
-                  context.read<FolderCubit>().navigationPath = '';
+                  context.read<DirectoryCubit>().navigationPath = '';
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blueGrey.shade50,
@@ -52,10 +52,11 @@ class Sidebar extends StatelessWidget {
                         .bodyLarge
                         ?.copyWith(fontWeight: FontWeight.bold)),
               ),
-              SizedBox(height: 10,)
+              SizedBox(
+                height: 10,
+              )
             ],
           ),
-          
         ],
       ),
     );

@@ -9,7 +9,7 @@ import 'package:turbo/pages/mainPage.dart';
 import 'package:turbo/pages/videoPage.dart';
 import 'package:video_player_win/video_player_win_plugin.dart';
 
-import 'cubit/folder_cubit.dart';
+import 'cubit/directory_cubit.dart';
 import 'cubit/media_cubit.dart';
 import 'network_service.dart';
 import 'pages/loginPage.dart';
@@ -33,8 +33,8 @@ class MainApp extends StatelessWidget {
         BlocProvider<AuthCubit>(
           create: (context) => AuthCubit(_networkService),
         ),
-        BlocProvider<FolderCubit>(
-          create: (context) => FolderCubit(_networkService),
+        BlocProvider<DirectoryCubit>(
+          create: (context) => DirectoryCubit(_networkService),
         ),
         BlocProvider<MediaCubit>(
           create: (context) => MediaCubit(),
@@ -54,8 +54,8 @@ class MainApp extends StatelessWidget {
                 if (authState is AuthLoggedIn &&
                     mediaCubit.state is MediaInitial) {
                   context
-                      .read<FolderCubit>()
-                      .navigateToFolder(authState.username);
+                      .read<DirectoryCubit>()
+                      .navigateToDirectory(authState.username);
                   return MainPage(networkService: _networkService);
                 } else if (authState is AuthLoggedIn &&
                     mediaCubit.state is MediaVideoPlaying) {

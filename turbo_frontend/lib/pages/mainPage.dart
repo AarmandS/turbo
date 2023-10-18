@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:turbo/network_service.dart';
 
-import '../cubit/folder_cubit.dart';
+import '../cubit/directory_cubit.dart';
 import '../widgets/file_grid.dart';
-import '../widgets/folder_grid.dart';
+import '../widgets/directory_grid.dart';
 import '../widgets/sidebar.dart';
 
 class MainPage extends StatelessWidget {
@@ -14,8 +14,8 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var folderCubit = context.watch<FolderCubit>();
-    return BlocBuilder<FolderCubit, FolderState>(
+    var directoryCubit = context.watch<DirectoryCubit>();
+    return BlocBuilder<DirectoryCubit, DirectoryState>(
       builder: (context, state) {
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,11 +32,11 @@ class MainPage extends StatelessWidget {
                       children: [
                         IconButton(
                             onPressed: () {
-                              folderCubit.navigateBack();
+                              directoryCubit.navigateBack();
                             },
                             icon: Icon(Icons.arrow_back)),
                         Text(
-                          folderCubit.navigationPath,
+                          directoryCubit.navigationPath,
                           style: Theme.of(context)
                               .textTheme
                               .headlineMedium
@@ -45,7 +45,7 @@ class MainPage extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: 12),
-                    FolderGrid(),
+                    DirectoryGrid(),
                     FileGrid()
                   ],
                 ),

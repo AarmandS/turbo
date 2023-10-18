@@ -1,12 +1,12 @@
-class FolderModel {
+class DirectoryModel {
   String path;
-  List<String> containedFolders;
+  List<String> containedDirectorys;
   List<String> containedFiles;
 
-  FolderModel.fromJson(Map<String, dynamic> json)
+  DirectoryModel.fromJson(Map<String, dynamic> json)
       : path = json['media_path'],
-        containedFolders = (json['contents']['directories'] as List)
-            .map((folder) => folder as String)
+        containedDirectorys = (json['contents']['directories'] as List)
+            .map((directory) => directory as String)
             .toList(),
         containedFiles = (json['contents']['files'] as List)
             .map((file) => file as String)

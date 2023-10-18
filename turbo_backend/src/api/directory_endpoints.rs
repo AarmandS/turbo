@@ -88,9 +88,9 @@ pub async fn share_directory(
 pub async fn delete_directory(
     auth_token: AuthenticationToken,
     state: web::Data<Arc<dyn AppState + Sync + Send>>,
-    share: web::Json<DirectoryShare>,
+    media_path: web::Path<String>,
 ) -> impl Responder {
-    let decoded_media_path = urlencoding::decode(&share.media_path)
+    let decoded_media_path = urlencoding::decode(&media_path)
         .expect("UTF-8")
         .into_owned();
 

@@ -40,7 +40,7 @@ async fn main() -> std::io::Result<()> {
                 http::header::AUTHORIZATION,
                 http::header::CONTENT_TYPE,
             ])
-            .allowed_methods(vec!["GET", "POST"])
+            .allowed_methods(vec!["GET", "POST", "DELETE"])
             .max_age(3600);
 
         App::new()

@@ -106,8 +106,8 @@ impl DirectoryRepository {
         Ok(())
         // create symbolic link return ok
 
-        // if the username's shared_with_me folder exists, then create a symbolic link
-        // to the given folder in that folder, if it does not exist, do the same,
+        // if the username's shared_with_me directory exists, then create a symbolic link
+        // to the given directory in that directory, if it does not exist, do the same,
         // but create the directory first
 
         // share with non existant user, should fail

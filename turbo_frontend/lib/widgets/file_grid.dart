@@ -6,7 +6,7 @@ import 'package:turbo/widgets/photo_grid.dart';
 import 'package:turbo/widgets/video.dart';
 import 'package:turbo/widgets/video_grid.dart';
 
-import '../cubit/folder_cubit.dart';
+import '../cubit/directory_cubit.dart';
 
 class FileGrid extends StatelessWidget {
   late List<FileModel> photos = [];
@@ -18,10 +18,11 @@ class FileGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         width: 1000,
-        child: BlocBuilder<FolderCubit, FolderState>(builder: (context, state) {
-          if (state is FolderInitial) {
+        child: BlocBuilder<DirectoryCubit, DirectoryState>(
+            builder: (context, state) {
+          if (state is DirectoryInitial) {
             return Center(child: CircularProgressIndicator());
-          } else if (state is FolderRefresh) {
+          } else if (state is DirectoryRefresh) {
             photos = state.files
                 .where((file) => file.fileType == FileType.photo)
                 .toList();

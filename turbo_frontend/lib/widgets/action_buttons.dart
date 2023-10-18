@@ -2,15 +2,15 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../cubit/folder_cubit.dart';
+import '../cubit/directory_cubit.dart';
 
 class ActionButtons extends StatelessWidget {
-  final _folderNameTextController = TextEditingController();
+  final _directoryNameTextController = TextEditingController();
   ActionButtons({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var folderCubit = context.read<FolderCubit>();
+    var directoryCubit = context.read<DirectoryCubit>();
     return Column(children: [
       ElevatedButton.icon(
         icon: Icon(
@@ -19,10 +19,10 @@ class ActionButtons extends StatelessWidget {
         ),
         onPressed: () {
           var dialog = AlertDialog(
-              title: Text('Create folder'),
+              title: Text('Create directory'),
               content: TextField(
-                controller: _folderNameTextController,
-                decoration: InputDecoration(hintText: "Folder name"),
+                controller: _directoryNameTextController,
+                decoration: InputDecoration(hintText: "Directory name"),
               ),
               actions: [
                 TextButton(
@@ -33,10 +33,10 @@ class ActionButtons extends StatelessWidget {
                 ),
                 TextButton(
                     onPressed: () {
-                      if (_folderNameTextController.text != '') {
+                      if (_directoryNameTextController.text != '') {
                         context
-                            .read<FolderCubit>()
-                            .createFolder(_folderNameTextController.text);
+                            .read<DirectoryCubit>()
+                            .createDirectory(_directoryNameTextController.text);
                       }
                       Navigator.pop(context);
                     },
@@ -54,7 +54,7 @@ class ActionButtons extends StatelessWidget {
           minimumSize: Size(190, 50),
           padding: EdgeInsets.all(2),
         ),
-        label: Text('Create folder',
+        label: Text('Create directory',
             style: Theme.of(context)
                 .textTheme
                 .bodyLarge
@@ -77,7 +77,8 @@ class ActionButtons extends StatelessWidget {
               withData: true);
           if (fileResult != null) {
             for (var file in fileResult!.files) {
-              folderCubit.uploadImage(file.name, file.extension!, file.path!);
+              directoryCubit.uploadImage(
+                  file.name, file.extension!, file.path!);
             }
           }
         },

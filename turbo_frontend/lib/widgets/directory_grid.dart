@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:turbo/cubit/folder_cubit.dart';
+import 'package:turbo/cubit/directory_cubit.dart';
 
-import 'folder.dart';
+import 'directory.dart';
 
-class FolderGrid extends StatelessWidget {
-  late List<String> folders = [];
-  FolderGrid({super.key});
+class DirectoryGrid extends StatelessWidget {
+  late List<String> directories = [];
+  DirectoryGrid({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<FolderCubit, FolderState>(builder: (context, state) {
-      if (state is FolderInitial) {
+    return BlocBuilder<DirectoryCubit, DirectoryState>(
+        builder: (context, state) {
+      if (state is DirectoryInitial) {
         return Center(child: CircularProgressIndicator());
-      } else if (state is FolderRefresh) {
-        folders = state.folders;
+      } else if (state is DirectoryRefresh) {
+        directories = state.directories;
       }
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          folders.isNotEmpty
+          directories.isNotEmpty
               ? Text(
-                  'Folders',
+                  'Directorys',
                   style: Theme.of(context)
                       .textTheme
                       .headlineMedium
@@ -33,11 +34,11 @@ class FolderGrid extends StatelessWidget {
               child: GridView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
-                  itemCount: folders.length,
+                  itemCount: directories.length,
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                       maxCrossAxisExtent: 200),
                   itemBuilder: (context, index) {
-                    return Folder(name: folders[index]);
+                    return Directory(name: directories[index]);
                   })),
         ],
       );
