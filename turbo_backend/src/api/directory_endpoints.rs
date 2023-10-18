@@ -1,6 +1,6 @@
 use crate::{
     auth::{user_has_permission, AuthenticationToken},
-    models::directory::{self, Directory, DirectoryShare},
+    models::directory::{self, Directory, DirectoryRename, DirectoryShare},
     repo::{directory_repository::DirectoryRepositoryError, user_repository},
     state::app_state::AppState,
 };
@@ -82,6 +82,34 @@ pub async fn share_directory(
             HttpResponse::BadRequest().body("The user's root directory does not exist.")
         }
         _ => HttpResponse::InternalServerError().body("Failed to share directory with user."),
+    }
+}
+
+pub async fn rename_directory(
+    auth_token: AuthenticationToken,
+    state: web::Data<Arc<dyn AppState + Sync + Send>>,
+    media_path: web::Path<String>,
+    rename: web::Json<DirectoryRename>,
+) -> impl Responder {
+    let decoded_media_path = urlencoding::decode(&media_path)
+        .expect("UTF-8")
+        .into_owned();
+
+    if !user_has_permission(&auth_token.sub, &decoded_media_path) {
+        return HttpResponse::Forbidden().body("The user cannot access the given resource.");
+    }
+
+    let dir_repo = state.get_directory_repository();
+
+    match dir_repo.rename_directory(&decoded_media_path, &rename.new_name) {
+        Ok(_) => HttpResponse::Ok().body("Succesfully renamed directory."),
+        Err(DirectoryRepositoryError::DirectoryDoesNotExist) => {
+            HttpResponse::NotFound().body("Directory does not exist")
+        }
+        Err(DirectoryRepositoryError::DirectoryAlreadyExists) => {
+            HttpResponse::Conflict().body("A directory with the given name already exists.")
+        }
+        _ => HttpResponse::InternalServerError().body("Failed to rename directory."),
     }
 }
 

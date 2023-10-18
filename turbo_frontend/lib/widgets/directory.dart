@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:turbo/widgets/directory_menu.dart';
 
 import '../cubit/directory_cubit.dart';
 
-enum _MenuValues { SHARE, RENAME, DELETE }
+void renameDirectoryDialog(BuildContext context, String oldName) {}
 
 class Directory extends StatelessWidget {
   final String name;
@@ -47,38 +48,7 @@ class Directory extends StatelessWidget {
                             style: Theme.of(context).textTheme.bodyLarge,
                           ),
                         ),
-                        PopupMenuButton<_MenuValues>(
-                          itemBuilder: (BuildContext context) => [
-                            PopupMenuItem(
-                              value: _MenuValues.SHARE,
-                              child: Text('Share'),
-                            ),
-                            PopupMenuItem(
-                              value: _MenuValues.RENAME,
-                              child: Text('Rename'),
-                            ),
-                            PopupMenuItem(
-                              value: _MenuValues.DELETE,
-                              child: Text('Delete'),
-                              // ask if the user is sure to delete
-                            )
-                          ],
-                          onSelected: (value) {
-                            switch (value) {
-                              case _MenuValues.SHARE:
-                                // TODO: Handle this case.
-                                break;
-                              case _MenuValues.RENAME:
-                                // TODO: Handle this case.
-                                break;
-                              case _MenuValues.DELETE:
-                                var directoryCubit =
-                                    context.read<DirectoryCubit>();
-                                directoryCubit.deleteDirectory(name);
-                                break;
-                            }
-                          },
-                        )
+                        DirectoryMenu(directoryName: name)
                       ],
                     ),
                   ),

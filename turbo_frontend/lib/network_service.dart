@@ -62,6 +62,25 @@ class NetworkService {
     return false;
   }
 
+  // handle failures
+  void renameDirectory(String path, String newName) async {
+    if (accessToken != null) {
+      var encodedPath = path.replaceAll("/", "%2F");
+      var url = Uri.parse('http://$baseUrl/directories/$encodedPath');
+      var token = accessToken?.accessToken;
+      final Map<String, String> headers = {
+        'Authorization': token!,
+        'Content-Type': 'application/json',
+      };
+
+      http.put(
+        url,
+        headers: headers,
+        body: jsonEncode({'new_name': newName}),
+      );
+    }
+  }
+
   void deleteDirectory(String path) async {
     if (accessToken != null) {
       var encodedPath = path.replaceAll("/", "%2F");

@@ -17,7 +17,9 @@ use actix_web::{
     App, HttpServer,
 };
 use api::{
-    directory_endpoints::{create_directory, delete_directory, get_directory, share_directory},
+    directory_endpoints::{
+        create_directory, delete_directory, get_directory, rename_directory, share_directory,
+    },
     user_endpoints::{create_user, login},
 };
 
@@ -40,7 +42,7 @@ async fn main() -> std::io::Result<()> {
                 http::header::AUTHORIZATION,
                 http::header::CONTENT_TYPE,
             ])
-            .allowed_methods(vec!["GET", "POST", "DELETE"])
+            .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
             .max_age(3600);
 
         App::new()
@@ -52,8 +54,9 @@ async fn main() -> std::io::Result<()> {
             .route("/share", web::post().to(share_directory))
             .service(
                 scope("/directories")
-                    .route("/{media_path}", web::get().to(get_directory))
                     .route("/{media_path}", web::post().to(create_directory))
+                    .route("/{media_path}", web::get().to(get_directory))
+                    .route("/{media_path}", web::put().to(rename_directory))
                     .route("/{media_path}", web::delete().to(delete_directory)),
             )
     })

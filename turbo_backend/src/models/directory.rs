@@ -14,3 +14,8 @@ pub struct DirectoryShare {
     pub media_path: String,
     pub username: String,
 }
+
+#[derive(Deserialize)]
+pub struct DirectoryRename {
+    pub new_name: String,
+}

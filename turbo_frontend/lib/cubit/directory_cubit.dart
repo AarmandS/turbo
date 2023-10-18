@@ -21,6 +21,15 @@ class DirectoryCubit extends Cubit<DirectoryState> {
     emit(DirectoryRefresh(state.directories, state.files));
   }
 
+  void renameDirectory(String oldName, String newName) async {
+    _networkService.renameDirectory('$navigationPath/$oldName', newName);
+    // handle unsuccesful directory creation
+    var oldDirIndex = state.directories.indexOf(oldName);
+    state.directories.remove(oldName);
+    state.directories.insert(oldDirIndex, newName);
+    emit(DirectoryRefresh(state.directories, state.files));
+  }
+
   void deleteDirectory(String name) async {
     _networkService.deleteDirectory('$navigationPath/$name');
     // handle unsuccesful directory deletion

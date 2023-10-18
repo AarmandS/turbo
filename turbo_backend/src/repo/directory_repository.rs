@@ -12,6 +12,7 @@ pub enum DirectoryRepositoryError {
     FailedToCreateSymlink,
     DirectoryDoesNotExist,
     FailedToDeleteDirectory,
+    FailedToRenameDirectory,
 }
 
 pub struct DirectoryRepository {
@@ -118,12 +119,32 @@ impl DirectoryRepository {
         // ha mar letezik akkor noveljuk a szamot egyel, az nem jo, inkabb faileljen mer ugy de amugy mukodne
     }
 
-    pub fn rename_directory(&self, media_path: &str, new_name: &str) -> Result<(), ()> {
-        // if TO already exists, return error,
-        // if FROM does not exists return error
-        // replace media_path's last element with new_name and that will be the to
+    pub fn rename_directory(
+        &self,
+        media_path: &str,
+        new_name: &str,
+    ) -> Result<(), DirectoryRepositoryError> {
+        let from_fs_path = self.get_fs_path(media_path);
+
+        let to_media_path = self.replace_last_path_element(media_path, new_name);
+        let to_fs_path = self.get_fs_path(&to_media_path);
+
+        if !from_fs_path.exists() {
+            return Err(DirectoryRepositoryError::DirectoryDoesNotExist);
+        }
+
+        if to_fs_path.exists() {
+            return Err(DirectoryRepositoryError::DirectoryAlreadyExists);
+        }
+
+        // check that it does not contain any special characters
+
+        fs::rename(from_fs_path, to_fs_path)
+            .or(Err(DirectoryRepositoryError::FailedToRenameDirectory))?;
+
         Ok(())
     }
+
     pub fn delete_directory(&self, media_path: &str) -> Result<(), DirectoryRepositoryError> {
         // csak siman kitorolni ha letezik, ha nem akkor 404
         // megcsinalni hogy
@@ -138,5 +159,18 @@ impl DirectoryRepository {
     }
     fn get_fs_path(&self, media_path: &str) -> PathBuf {
         PathBuf::from(format!("{}/{}", self.media_root, media_path))
+    }
+
+    fn replace_last_path_element(&self, path: &str, new_element: &str) -> String {
+        // Find the last occurrence of '/' in the string slice
+        if let Some(last_slash_index) = path.rfind('/') {
+            // Create a new string with the updated path
+            let mut new_path = path[..last_slash_index + 1].to_string();
+            new_path.push_str(new_element);
+            new_path
+        } else {
+            // If there's no '/', simply replace the entire path with the new element
+            new_element.to_string()
+        }
     }
 }
