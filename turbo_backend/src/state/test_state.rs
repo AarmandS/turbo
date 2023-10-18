@@ -1,0 +1,74 @@
+use super::app_state::AppState;
+use crate::repo::directory_repository::DirectoryRepository;
+use crate::repo::user_repository::UserRepository;
+use crate::{auth::JwtKeys, repo::mock_user_repository::MockUserRepository};
+use async_trait::async_trait;
+use jsonwebtoken::{DecodingKey, EncodingKey};
+use std::path::PathBuf;
+use std::{fs, path::Path};
+
+pub struct TestState {
+    jwt_keys: JwtKeys,
+    media_root: String,
+    user_repository: MockUserRepository,
+    directory_repository: DirectoryRepository,
+}
+
+impl TestState {
+    pub async fn new() -> Self {
+        let jwt_secret = String::from("very_secret_secret");
+        let encoding_key = EncodingKey::from_secret(jwt_secret.as_ref());
+        let decoding_key = DecodingKey::from_secret(jwt_secret.as_ref());
+        let jwt_keys = JwtKeys {
+            encoding_key,
+            decoding_key,
+        };
+
+        let media_root = String::from("./test_media_root");
+
+        if !Path::new(&media_root).exists() {
+            fs::create_dir(&media_root).expect(&format!(
+                "Failed to create test media root. {}",
+                &media_root
+            ));
+        }
+
+        let user_repository = MockUserRepository::new().await;
+        let directory_repository = DirectoryRepository {
+            media_root: media_root.to_owned(),
+            shared_with_me: PathBuf::from("shared_with_me"),
+        };
+
+        Self {
+            jwt_keys,
+            media_root,
+            user_repository,
+            directory_repository,
+        }
+    }
+}
+
+#[async_trait]
+impl AppState for TestState {
+    fn get_jwt_keys(&self) -> &JwtKeys {
+        &self.jwt_keys
+    }
+
+    fn get_media_root(&self) -> &str {
+        &self.media_root
+    }
+
+    fn get_user_repository(&self) -> &dyn UserRepository {
+        &self.user_repository
+    }
+
+    fn get_directory_repository(&self) -> &DirectoryRepository {
+        &self.directory_repository
+    }
+}
+
+impl Drop for TestState {
+    fn drop(&mut self) {
+        let _ = fs::remove_dir_all(&self.media_root);
+    }
+}

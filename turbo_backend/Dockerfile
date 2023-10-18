@@ -1,0 +1,12 @@
+FROM rust:latest
+
+WORKDIR /app
+
+COPY ./src/ ./src/
+COPY ./Cargo.toml ./Cargo.toml
+
+RUN cargo build --release
+
+EXPOSE 8080
+
+CMD ["target/release/turbo"]

@@ -1,0 +1,32 @@
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+
+  turbo_backend:
+    build:
+      context: ./turbo_backend
+      dockerfile: Dockerfile
+    container_name: turbo_backend
+    depends_on:
+      - mongodb
+    ports:
+      - "8080:8080"
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017
+      JWT_SECRET: titok
+      TURBO_MEDIA_ROOT: /media
+    volumes:
+      - ./turbo_backend/media:/media
+
+  turbo_frontend:
+    build:
+      context: ./turbo_frontend
+      dockerfile: Dockerfile
+    container_name: turbo_frontend
+    depends_on:
+      - turbo_backend
+    ports:
+     - "80:80"
