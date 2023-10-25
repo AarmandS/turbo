@@ -6,7 +6,9 @@ enum _MenuValues { SHARE, RENAME, DELETE }
 
 class DirectoryMenu extends StatelessWidget {
   final String directoryName;
+  // TODO: dispose of these
   final _directoryNameTextController = TextEditingController();
+  final _usernameTextController = TextEditingController();
 
   DirectoryMenu({super.key, required this.directoryName});
 
@@ -32,7 +34,36 @@ class DirectoryMenu extends StatelessWidget {
         var directoryCubit = context.read<DirectoryCubit>();
         switch (value) {
           case _MenuValues.SHARE:
-            // TODO: Handle this case.
+            var dialog = AlertDialog(
+                title: Text('Share directory'),
+                content: TextField(
+                  controller: _usernameTextController,
+                  decoration: InputDecoration(hintText: "User to share with"),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('Cancel'),
+                  ),
+                  TextButton(
+                      onPressed: () {
+                        if (_usernameTextController.text != '') {
+                          // lekezelni ha ures a text controller
+                          directoryCubit.shareDirectory(
+                              directoryName, _usernameTextController.text);
+                        }
+                        Navigator.pop(context);
+                      },
+                      child: Text('Share')),
+                ]);
+
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return dialog;
+                });
             break;
           case _MenuValues.RENAME:
             var dialog = AlertDialog(

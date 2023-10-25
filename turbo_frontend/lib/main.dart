@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:html' as html;
 
 import 'package:better_player/better_player.dart';
 import 'package:flutter/foundation.dart';
@@ -16,13 +17,13 @@ import 'pages/loginPage.dart';
 
 void main() {
   if (!kIsWeb && Platform.isWindows) WindowsVideoPlayer.registerWith();
+
   runApp(MainApp());
 }
 
 class MainApp extends StatelessWidget {
+  NetworkService _networkService = NetworkService();
   MainApp({super.key});
-
-  final _networkService = NetworkService();
 
   void initState() {}
 
@@ -57,10 +58,11 @@ class MainApp extends StatelessWidget {
                       .read<DirectoryCubit>()
                       .navigateToDirectory(authState.username);
                   return MainPage(networkService: _networkService);
-                } else if (authState is AuthLoggedIn &&
-                    mediaCubit.state is MediaVideoPlaying) {
-                  return VideoPage();
                 }
+                // else if (authState is AuthLoggedIn &&
+                //     mediaCubit.state is MediaVideoPlaying) {
+                //   return VideoPage();
+                // }
                 // return BetterPlayer.network(
                 //   ''
                 // )

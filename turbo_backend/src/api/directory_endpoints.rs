@@ -73,6 +73,7 @@ pub async fn share_directory(
     }
 
     let dir_repo = state.get_directory_repository();
+    println!("user {}", &share.username);
 
     match dir_repo.share_directory(&share.media_path, &share.username) {
         Ok(_) => HttpResponse::Ok().body("Succesfully shared directory."),

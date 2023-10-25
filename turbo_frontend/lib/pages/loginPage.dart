@@ -64,6 +64,22 @@ class _LoginPageState extends State<LoginPage> {
                 .bodyLarge
                 ?.copyWith(fontWeight: FontWeight.bold)),
       ),
+      ElevatedButton(
+        onPressed: () {
+          context.read<AuthCubit>().sign_up(
+              _usernameTextController.text, _passwordTextController.text);
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.indigo.shade300,
+          minimumSize: Size(240, 50),
+          padding: EdgeInsets.all(2),
+        ),
+        child: Text('Log in',
+            style: Theme.of(context)
+                .textTheme
+                .bodyLarge
+                ?.copyWith(fontWeight: FontWeight.bold)),
+      ),
       if (context.watch<AuthCubit>().state is AuthFailedLogin)
         Column(
           children: [

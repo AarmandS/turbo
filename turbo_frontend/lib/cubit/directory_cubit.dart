@@ -21,6 +21,12 @@ class DirectoryCubit extends Cubit<DirectoryState> {
     emit(DirectoryRefresh(state.directories, state.files));
   }
 
+  // terjen vissza resultal
+  void shareDirectory(String directoryName, String username) async {
+    await _networkService.shareDirectory(
+        '$navigationPath/$directoryName', username);
+  }
+
   void renameDirectory(String oldName, String newName) async {
     _networkService.renameDirectory('$navigationPath/$oldName', newName);
     // handle unsuccesful directory creation

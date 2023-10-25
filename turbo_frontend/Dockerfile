@@ -7,9 +7,9 @@ WORKDIR /app
 # Copy the Flutter web app's source code to the container
 COPY . .
 
-
+ARG BACKEND_URL
 RUN flutter pub get
-RUN flutter build web
+RUN flutter build web --dart-define=BACKEND_URL=$BACKEND_URL
 
 FROM nginx:alpine
 

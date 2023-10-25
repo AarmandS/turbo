@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,15 +10,17 @@ import 'package:turbo/models/token.dart';
 
 import 'models/file_model.dart';
 import 'models/directory_model.dart';
+import 'dart:developer' as developer;
 
 // this should be on the local screen on android
-const String baseUrl = '127.0.0.1:8080';
+const String baseUrl = String.fromEnvironment("BACKEND_URL");
 
 class NetworkService {
   AccessToken? accessToken;
 
   Future<bool> getAccessToken(String username, String password) async {
-    var url = Uri.http(baseUrl, 'login');
+    developer.log(baseUrl, name: 'my.app.category');
+    var url = Uri.parse('$baseUrl/login');
 
     final Map<String, String> headers = {
       'Content-Type': 'application/json', // Set the Content-Type here
@@ -37,7 +40,7 @@ class NetworkService {
 
   NetworkImage? getImage(String mediaUrl) {
     if (accessToken != null) {
-      var url = 'http://$baseUrl/media/$mediaUrl';
+      var url = '$baseUrl/media/$mediaUrl';
       var token = accessToken?.accessToken;
       var image =
           NetworkImage(url, headers: {'Authorization': 'Bearer $token'});
@@ -50,7 +53,7 @@ class NetworkService {
   Future<bool> createDirectory(String path) async {
     if (accessToken != null) {
       var encodedPath = path.replaceAll("/", "%2F");
-      var url = Uri.parse('http://$baseUrl/directories/$encodedPath');
+      var url = Uri.parse('$baseUrl/directories/$encodedPath');
       var token = accessToken?.accessToken;
       // nincs lekezelve ha mondjuk ugyan az a neve, szerver oldalon se
       var response = await http.post(url, headers: {'Authorization': token!});
@@ -62,11 +65,34 @@ class NetworkService {
     return false;
   }
 
+  Future<bool> shareDirectory(String path, String username) async {
+    if (accessToken != null) {
+      // var encodedPath = path.replaceAll("/", "%2F");
+      var url = Uri.parse('$baseUrl/share');
+      var token = accessToken?.accessToken;
+      // nincs lekezelve ha mondjuk ugyan az a neve, szerver oldalon se
+      var response = await http.post(url,
+          headers: {
+            'Authorization': token!,
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            "media_path": path,
+            "username": username,
+          }));
+
+      if (response.statusCode == 200) {
+        return true;
+      } // itt is resultot hasznalni mint rustban, es kulon lekezelni az eseteket
+    }
+    return false;
+  }
+
   // handle failures
   void renameDirectory(String path, String newName) async {
     if (accessToken != null) {
       var encodedPath = path.replaceAll("/", "%2F");
-      var url = Uri.parse('http://$baseUrl/directories/$encodedPath');
+      var url = Uri.parse('$baseUrl/directories/$encodedPath');
       var token = accessToken?.accessToken;
       final Map<String, String> headers = {
         'Authorization': token!,
@@ -84,7 +110,7 @@ class NetworkService {
   void deleteDirectory(String path) async {
     if (accessToken != null) {
       var encodedPath = path.replaceAll("/", "%2F");
-      var url = Uri.parse('http://$baseUrl/directories/$encodedPath');
+      var url = Uri.parse('$baseUrl/directories/$encodedPath');
       var token = accessToken?.accessToken;
       // nincs lekezelve ha mondjuk ugyan az a neve, szerver oldalon se
       var response = await http.delete(url, headers: {'Authorization': token!});
@@ -93,7 +119,7 @@ class NetworkService {
 
   Future<DirectoryModel> getDirectory(String path) async {
     var encodedPath = path.replaceAll("/", "%2F");
-    var url = Uri.parse('http://$baseUrl/directories/$encodedPath');
+    var url = Uri.parse('$baseUrl/directories/$encodedPath');
     var token = accessToken?.accessToken;
 
     // nincs lekezelve ha mondjuk ugyan az a neve, szerver oldalon se

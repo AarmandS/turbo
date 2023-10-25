@@ -44,7 +44,9 @@ impl DirectoryRepository {
                     let entry = &entry.ok()?;
                     let metadata = fs::metadata(entry.path()).ok()?;
                     let name = entry.file_name().clone().into_string().ok()?;
-                    if metadata.is_dir() {
+                    println!("{}", name);
+                    // this is only valid for sharing directories
+                    if metadata.is_dir() || metadata.is_symlink() {
                         directories.push(name);
                     } else if metadata.is_file() {
                         files.push(name);
@@ -87,11 +89,13 @@ impl DirectoryRepository {
         // this is the path of the newly shared directory
         let user_shared_dir: PathBuf = [
             user_shared_with_me_dir.clone(),
-            PathBuf::from("new_directory"),
+            PathBuf::from(self.get_last_path_element(media_path)),
         ]
         .iter()
         .collect();
 
+        // itt a symlinket kellene checkelni mert most 500at ad vissza
+        // 409 helyett
         if user_shared_dir.exists() {
             return Err(DirectoryRepositoryError::DirectoryAlreadyExists);
             // return already exists error
@@ -137,8 +141,6 @@ impl DirectoryRepository {
             return Err(DirectoryRepositoryError::DirectoryAlreadyExists);
         }
 
-        // check that it does not contain any special characters
-
         fs::rename(from_fs_path, to_fs_path)
             .or(Err(DirectoryRepositoryError::FailedToRenameDirectory))?;
 
@@ -171,6 +173,14 @@ impl DirectoryRepository {
         } else {
             // If there's no '/', simply replace the entire path with the new element
             new_element.to_string()
+        }
+    }
+
+    fn get_last_path_element(&self, path: &str) -> String {
+        if let Some(last_slash_index) = path.rfind('/') {
+            path[last_slash_index + 1..].to_string()
+        } else {
+            path.to_owned()
         }
     }
 }
