@@ -24,13 +24,11 @@ class _LoginPageState extends State<LoginPage> {
     var authCubit = context.watch<AuthCubit>();
     var mediaCubit = context.watch<MediaCubit>();
 
-    if (authCubit.state is AuthLoggedIn && mediaCubit.state is MediaInitial) {
+    if (authCubit.state is AuthLoggedIn) {
       context
           .read<DirectoryCubit>()
           .navigateToDirectory((authCubit.state as AuthLoggedIn).username);
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        context.go('/home');
-      });
+      context.go('/home');
     }
 
     return Scaffold(
@@ -69,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           ElevatedButton(
             onPressed: () {
-              context.read<AuthCubit>().login(
+              authCubit.login(
                   _usernameTextController.text, _passwordTextController.text);
             },
             style: ElevatedButton.styleFrom(
@@ -88,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           ElevatedButton(
             onPressed: () {
-              context.go('signup');
+              context.go('/signup');
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.grey.shade400,

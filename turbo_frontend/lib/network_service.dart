@@ -19,7 +19,6 @@ class NetworkService {
   AccessToken? accessToken;
 
   Future<bool> getAccessToken(String username, String password) async {
-    developer.log(baseUrl, name: 'my.app.category');
     var url = Uri.parse('$baseUrl/login');
 
     final Map<String, String> headers = {
@@ -36,6 +35,27 @@ class NetworkService {
 
     accessToken = AccessToken.fromJson(jsonDecode(response.body));
     return true;
+  }
+
+  Future<bool> signup(String username, String password) async {
+    var url = Uri.parse('$baseUrl/users');
+
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json', // Set the Content-Type here
+    };
+    // fix on web
+    var response = await http.post(url,
+        body: jsonEncode({'username': username, 'password': password}),
+        headers: headers);
+
+    if (response.statusCode == 201) {
+      return true;
+      print('helo');
+    }
+
+    // handle internal server error etc.
+    // and conflict differently
+    return false;
   }
 
   NetworkImage? getImage(String mediaUrl) {

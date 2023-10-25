@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:turbo/cubit/auth_cubit.dart';
+import 'package:turbo/cubit/signup_cubit.dart';
 import 'package:turbo/pages/mainPage.dart';
+import 'package:turbo/pages/signup_page.dart';
 import 'package:turbo/pages/videoPage.dart';
 import 'package:video_player_win/video_player_win_plugin.dart';
 
@@ -37,6 +39,11 @@ class MainApp extends StatelessWidget {
                 child: LoginPage(),
               )),
       GoRoute(
+          path: '/signup',
+          pageBuilder: (context, state) => NoTransitionPage<void>(
+                child: SignupPage(),
+              )),
+      GoRoute(
           path: '/home',
           pageBuilder: (context, state) => NoTransitionPage<void>(
                 child: MainPage(networkService: _networkService),
@@ -46,6 +53,9 @@ class MainApp extends StatelessWidget {
       providers: [
         BlocProvider<AuthCubit>(
           create: (context) => AuthCubit(_networkService),
+        ),
+        BlocProvider<SignupCubit>(
+          create: (context) => SignupCubit(_networkService),
         ),
         BlocProvider<DirectoryCubit>(
           create: (context) => DirectoryCubit(_networkService),

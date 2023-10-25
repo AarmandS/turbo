@@ -42,9 +42,7 @@ class Sidebar extends StatelessWidget {
                 onPressed: () {
                   context.read<AuthCubit>().logout();
                   context.read<DirectoryCubit>().navigationPath = '';
-                  SchedulerBinding.instance.addPostFrameCallback((_) {
-                    context.go('/login');
-                  });
+                  context.go('/login');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blueGrey.shade50,
