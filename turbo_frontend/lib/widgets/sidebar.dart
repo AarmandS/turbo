@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:turbo/cubit/directory_cubit.dart';
 import 'package:turbo/widgets/action_buttons.dart';
 import 'package:turbo/widgets/title_bar.dart';
@@ -40,6 +42,9 @@ class Sidebar extends StatelessWidget {
                 onPressed: () {
                   context.read<AuthCubit>().logout();
                   context.read<DirectoryCubit>().navigationPath = '';
+                  SchedulerBinding.instance.addPostFrameCallback((_) {
+                    context.go('/login');
+                  });
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blueGrey.shade50,

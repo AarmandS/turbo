@@ -15,9 +15,9 @@ class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var directoryCubit = context.watch<DirectoryCubit>();
-    return BlocBuilder<DirectoryCubit, DirectoryState>(
-      builder: (context, state) {
-        return Row(
+    return Scaffold(
+        backgroundColor: Colors.blueGrey.shade50,
+        body: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Sidebar(),
@@ -52,8 +52,6 @@ class MainPage extends StatelessWidget {
               ),
             ),
           ],
-        );
-      },
-    );
+        ));
   }
 }
