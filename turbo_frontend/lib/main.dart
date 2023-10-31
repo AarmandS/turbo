@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:html' as html;
 
 import 'package:better_player/better_player.dart';
 import 'package:flutter/foundation.dart';

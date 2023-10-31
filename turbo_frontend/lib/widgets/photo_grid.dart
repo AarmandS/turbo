@@ -5,9 +5,9 @@ import 'package:turbo/widgets/photo.dart';
 
 import '../cubit/directory_cubit.dart';
 
-class PhotoGrid extends StatelessWidget {
-  final List<FileModel> photos;
-  PhotoGrid(this.photos, {super.key});
+class ImageGrid extends StatelessWidget {
+  final List<String> images;
+  ImageGrid(this.images, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +15,9 @@ class PhotoGrid extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        photos.isNotEmpty
+        images.isNotEmpty
             ? Text(
-                'Photos',
+                'Images',
                 style: Theme.of(context)
                     .textTheme
                     .headlineMedium
@@ -27,14 +27,14 @@ class PhotoGrid extends StatelessWidget {
         GridView.builder(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
-            itemCount: photos.length,
+            itemCount: images.length,
             gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 200),
             itemBuilder: (context, index) {
               // not the best null safety practice fix this
-              return Photo(
-                name: photos[index].mediaUrl,
-                image: directoryCubit.getImage(photos[index].mediaUrl)!,
+              return ImageWidget(
+                name: images[index],
+                image: directoryCubit.getImage(images[index])!,
               );
             }),
       ],

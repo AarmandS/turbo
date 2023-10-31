@@ -10,19 +10,13 @@ use serde_json::json;
 use crate::{
     api::user_endpoints::create_user,
     state::{app_state::AppState, test_state::TestState},
+    tests::common::init_app,
 };
 
 #[actix_web::test]
 async fn test_user_create() {
-    let app_state: Data<Arc<dyn AppState + Sync + Send>> =
-        Data::new(Arc::new(TestState::new().await) as Arc<dyn AppState + Sync + Send>);
-    let media_root = app_state.get_media_root().to_owned();
-    let app = test::init_service(
-        App::new()
-            .app_data(app_state)
-            .route("/users", web::post().to(create_user)),
-    )
-    .await;
+    let media_root = "./test_media_root";
+    let app = init_app().await;
 
     let username = "test";
     let request_data = json!({
@@ -46,14 +40,7 @@ async fn test_user_create() {
 
 #[actix_web::test]
 async fn test_user_create_username_taken() {
-    let app_state: Data<Arc<dyn AppState + Sync + Send>> =
-        Data::new(Arc::new(TestState::new().await) as Arc<dyn AppState + Sync + Send>);
-    let app = test::init_service(
-        App::new()
-            .app_data(app_state)
-            .route("/users", web::post().to(create_user)),
-    )
-    .await;
+    let app = init_app().await;
 
     let request_data = json!({
         "username": "test",
@@ -77,16 +64,8 @@ async fn test_user_create_username_taken() {
 
 #[actix_web::test]
 async fn test_user_create_directory_taken() {
-    let app_state: Data<Arc<dyn AppState + Sync + Send>> =
-        Data::new(Arc::new(TestState::new().await) as Arc<dyn AppState + Sync + Send>);
-    let media_root = app_state.get_media_root();
-
-    let app = test::init_service(
-        App::new()
-            .app_data(app_state.clone())
-            .route("/users", web::post().to(create_user)),
-    )
-    .await;
+    let media_root = "./test_media_root";
+    let app = init_app().await;
 
     let user_dir = format!("{}/{}", media_root, "test");
     let _ = fs::create_dir(&user_dir);

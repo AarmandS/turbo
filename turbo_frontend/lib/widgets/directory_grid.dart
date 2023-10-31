@@ -22,7 +22,7 @@ class DirectoryGrid extends StatelessWidget {
         children: [
           directories.isNotEmpty
               ? Text(
-                  'Directorys',
+                  'Directories',
                   style: Theme.of(context)
                       .textTheme
                       .headlineMedium

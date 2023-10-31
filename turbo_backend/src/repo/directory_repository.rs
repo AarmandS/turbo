@@ -1,9 +1,13 @@
 use crate::models::directory::Directory;
+use crate::repo::utils::{get_file_type, FileType};
 use std::collections::HashMap;
+use std::ffi::OsStr;
 use std::os::unix::fs::symlink;
 use std::{fs, vec};
 
 use std::path::{Path, PathBuf};
+
+use super::utils::{concat_paths, get_last_path_element, replace_last_path_element};
 
 pub enum DirectoryRepositoryError {
     DirectoryAlreadyExists,
@@ -20,9 +24,10 @@ pub struct DirectoryRepository {
     pub shared_with_me: PathBuf,
 }
 
+// this could be a FS repository common for files and dirs
 impl DirectoryRepository {
     pub fn create_directory(&self, media_path: &str) -> Result<(), DirectoryRepositoryError> {
-        let fs_path = self.get_fs_path(media_path);
+        let fs_path = concat_paths(&self.media_root, media_path);
         if !fs_path.exists() {
             match fs::create_dir(&fs_path) {
                 Ok(_) => Ok(()),
@@ -34,11 +39,10 @@ impl DirectoryRepository {
     }
 
     pub fn get_directory(&self, media_path: &str) -> Option<Directory> {
-        let fs_path = self.get_fs_path(media_path);
+        let fs_path = concat_paths(&self.media_root, media_path);
         match fs::read_dir(&fs_path) {
             Ok(read_dir) => {
-                let mut directories: Vec<String> = vec![];
-                let mut files: Vec<String> = vec![];
+                let mut directory = Directory::new(media_path.to_owned());
 
                 for entry in read_dir {
                     let entry = &entry.ok()?;
@@ -47,21 +51,17 @@ impl DirectoryRepository {
                     println!("{}", name);
                     // this is only valid for sharing directories
                     if metadata.is_dir() || metadata.is_symlink() {
-                        directories.push(name);
+                        directory.directories.push(name);
                     } else if metadata.is_file() {
-                        files.push(name);
+                        match get_file_type(&name) {
+                            FileType::Image => directory.images.push(name),
+                            FileType::Video => directory.videos.push(name),
+                            FileType::Unknown => {}
+                        }
                     }
                 }
 
-                let contents: HashMap<String, Vec<String>> = HashMap::from([
-                    ("directories".to_owned(), directories),
-                    ("files".to_owned(), files),
-                ]);
-
-                Some(Directory {
-                    media_path: media_path.to_owned(),
-                    contents,
-                })
+                Some(directory)
             }
             Err(_) => None,
         }
@@ -73,8 +73,8 @@ impl DirectoryRepository {
         username: &str,
     ) -> Result<(), DirectoryRepositoryError> {
         // nme kell ez az fs path terminologia
-        let original_dir = self.get_fs_path(media_path);
-        let user_root_dir = self.get_fs_path(username);
+        let original_dir = concat_paths(&self.media_root, media_path);
+        let user_root_dir = concat_paths(&self.media_root, username);
 
         if !user_root_dir.exists() {
             return Err(DirectoryRepositoryError::UserRootDirectoryDoesNotExist);
@@ -89,7 +89,7 @@ impl DirectoryRepository {
         // this is the path of the newly shared directory
         let user_shared_dir: PathBuf = [
             user_shared_with_me_dir.clone(),
-            PathBuf::from(self.get_last_path_element(media_path)),
+            PathBuf::from(get_last_path_element(media_path)),
         ]
         .iter()
         .collect();
@@ -128,10 +128,10 @@ impl DirectoryRepository {
         media_path: &str,
         new_name: &str,
     ) -> Result<(), DirectoryRepositoryError> {
-        let from_fs_path = self.get_fs_path(media_path);
+        let from_fs_path = concat_paths(&self.media_root, media_path);
 
-        let to_media_path = self.replace_last_path_element(media_path, new_name);
-        let to_fs_path = self.get_fs_path(&to_media_path);
+        let to_media_path = replace_last_path_element(media_path, new_name);
+        let to_fs_path = concat_paths(&self.media_root, &to_media_path);
 
         if !from_fs_path.exists() {
             return Err(DirectoryRepositoryError::DirectoryDoesNotExist);
@@ -150,7 +150,7 @@ impl DirectoryRepository {
     pub fn delete_directory(&self, media_path: &str) -> Result<(), DirectoryRepositoryError> {
         // csak siman kitorolni ha letezik, ha nem akkor 404
         // megcsinalni hogy
-        let fs_path = self.get_fs_path(media_path);
+        let fs_path = concat_paths(&self.media_root, media_path);
         // this function does not follow symbolic links, it just deletes the link itself
         // so only the owner can delete shared directories
         if !fs_path.exists() {
@@ -158,29 +158,5 @@ impl DirectoryRepository {
         }
 
         fs::remove_dir_all(fs_path).or(Err(DirectoryRepositoryError::FailedToDeleteDirectory))
-    }
-    fn get_fs_path(&self, media_path: &str) -> PathBuf {
-        PathBuf::from(format!("{}/{}", self.media_root, media_path))
-    }
-
-    fn replace_last_path_element(&self, path: &str, new_element: &str) -> String {
-        // Find the last occurrence of '/' in the string slice
-        if let Some(last_slash_index) = path.rfind('/') {
-            // Create a new string with the updated path
-            let mut new_path = path[..last_slash_index + 1].to_string();
-            new_path.push_str(new_element);
-            new_path
-        } else {
-            // If there's no '/', simply replace the entire path with the new element
-            new_element.to_string()
-        }
-    }
-
-    fn get_last_path_element(&self, path: &str) -> String {
-        if let Some(last_slash_index) = path.rfind('/') {
-            path[last_slash_index + 1..].to_string()
-        } else {
-            path.to_owned()
-        }
     }
 }

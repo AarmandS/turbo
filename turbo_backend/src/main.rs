@@ -20,6 +20,7 @@ use api::{
     directory_endpoints::{
         create_directory, delete_directory, get_directory, rename_directory, share_directory,
     },
+    file_endpoints::{get_file, upload_file},
     user_endpoints::{create_user, login},
 };
 
@@ -52,6 +53,11 @@ async fn main() -> std::io::Result<()> {
             .route("/users", web::post().to(create_user))
             .route("/login", web::post().to(login))
             .route("/share", web::post().to(share_directory))
+            .service(
+                scope("/files")
+                    .route("/{media_path}", web::post().to(upload_file))
+                    .route("/{media_path}", web::get().to(get_file)),
+            )
             .service(
                 scope("/directories")
                     .route("/{media_path}", web::post().to(create_directory))

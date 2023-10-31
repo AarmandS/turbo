@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../models/file_model.dart';
@@ -10,7 +11,8 @@ class DirectoryCubit extends Cubit<DirectoryState> {
   late NetworkService _networkService;
   String navigationPath = '';
   DirectoryCubit(NetworkService networkService)
-      : super(DirectoryInitial([], [])) {
+      // maybe directory initial should be without args
+      : super(DirectoryInitial([], [], [])) {
     _networkService = networkService;
   }
 
@@ -18,7 +20,7 @@ class DirectoryCubit extends Cubit<DirectoryState> {
     await _networkService.createDirectory('$navigationPath/$name');
     // handle unsuccesful directory creation
     state.directories.add(name);
-    emit(DirectoryRefresh(state.directories, state.files));
+    emit(DirectoryRefresh(state.directories, state.images, state.videos));
   }
 
   // terjen vissza resultal
@@ -33,14 +35,14 @@ class DirectoryCubit extends Cubit<DirectoryState> {
     var oldDirIndex = state.directories.indexOf(oldName);
     state.directories.remove(oldName);
     state.directories.insert(oldDirIndex, newName);
-    emit(DirectoryRefresh(state.directories, state.files));
+    emit(DirectoryRefresh(state.directories, state.images, state.videos));
   }
 
   void deleteDirectory(String name) async {
     _networkService.deleteDirectory('$navigationPath/$name');
     // handle unsuccesful directory deletion
     state.directories.remove(name);
-    emit(DirectoryRefresh(state.directories, state.files));
+    emit(DirectoryRefresh(state.directories, state.images, state.videos));
   }
 
   void navigateToDirectory(String path) async {
@@ -48,13 +50,14 @@ class DirectoryCubit extends Cubit<DirectoryState> {
     await _networkService
         .getDirectory(navigationPath)
         .then((directoryModel) async {
-      var fileModels =
-          await Future.wait(directoryModel.containedFiles.map((filePath) async {
-        FileModel file =
-            await _networkService.getFile('$navigationPath/$filePath');
-        return file;
-      }).toList());
-      emit(DirectoryRefresh(directoryModel.containedDirectorys, fileModels));
+      // var fileModels =
+      //     await Future.wait(directoryModel.containedFiles.map((filePath) async {
+      //   FileModel file =
+      //       await _networkService.getFile('$navigationPath/$filePath');
+      //   return file;
+      // }).toList());
+      emit(DirectoryRefresh(
+          directoryModel.directories, directoryModel.images, []));
     });
   }
 
@@ -67,18 +70,17 @@ class DirectoryCubit extends Cubit<DirectoryState> {
     }
   }
 
-  NetworkImage? getImage(String mediaUrl) {
-    return _networkService.getImage(mediaUrl);
+  NetworkImage? getImage(String filename) {
+    return _networkService.getImage('$navigationPath/$filename');
   }
 
-  void uploadImage(String name, String fileExtension, String filePath) async {
-    var success = await _networkService.uploadImage(
-        navigationPath, name, fileExtension, filePath);
-    if (success) {
-      await _networkService.getFile('$navigationPath/$name').then((fileModel) {
-        state.files.add(fileModel);
-        emit(DirectoryRefresh(state.directories, state.files));
-      });
-    }
+  void uploadFile(PlatformFile file) async {
+    var success = await _networkService.uploadFile(navigationPath, file);
+    // if (success) {
+    //   await _networkService.getFile('$navigationPath/$name').then((fileModel) {
+    //     state.files.add(fileModel);
+    //     emit(DirectoryRefresh(state.directories, state.files));
+    //   });
+    // }
   }
 }

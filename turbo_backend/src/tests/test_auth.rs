@@ -10,19 +10,12 @@ use serde_json::json;
 use crate::{
     api::user_endpoints::{create_user, login},
     state::{app_state::AppState, test_state::TestState},
+    tests::common::init_app,
 };
 
 #[actix_web::test]
 async fn test_login_success() {
-    let app_state: Data<Arc<dyn AppState + Sync + Send>> =
-        Data::new(Arc::new(TestState::new().await) as Arc<dyn AppState + Sync + Send>);
-    let app = test::init_service(
-        App::new()
-            .app_data(app_state)
-            .route("/users", web::post().to(create_user))
-            .route("/login", web::post().to(login)),
-    )
-    .await;
+    let app = init_app().await;
 
     let request_data = json!({
         "username": "test",
@@ -53,15 +46,7 @@ async fn test_login_success() {
 
 #[actix_web::test]
 async fn test_login_failure() {
-    let app_state: Data<Arc<dyn AppState + Sync + Send>> =
-        Data::new(Arc::new(TestState::new().await) as Arc<dyn AppState + Sync + Send>);
-    let app = test::init_service(
-        App::new()
-            .app_data(app_state)
-            .route("/users", web::post().to(create_user))
-            .route("/login", web::post().to(login)),
-    )
-    .await;
+    let app = init_app().await;
 
     let request_data = json!({
         "username": "test",

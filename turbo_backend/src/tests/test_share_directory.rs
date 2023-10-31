@@ -16,55 +16,20 @@ use crate::{
     auth::TokenResponse,
     models::user,
     state::{app_state::AppState, test_state::TestState},
+    tests::common::{create_user_helper, get_auth_token_helper, init_app},
 };
 
 #[actix_web::test]
 async fn test_share_directory() {
-    let app_state: Data<Arc<dyn AppState + Sync + Send>> =
-        Data::new(Arc::new(TestState::new().await) as Arc<dyn AppState + Sync + Send>);
-    let media_root = app_state.get_media_root().to_owned();
-    let app = test::init_service(
-        App::new()
-            .app_data(app_state)
-            .route(
-                "/directories/{media_path}",
-                web::post().to(create_directory),
-            )
-            .route("/share", web::post().to(share_directory))
-            .route("/users", web::post().to(create_user))
-            .route("/login", web::post().to(login)),
-    )
-    .await;
+    let media_root = "./test_media_root";
+    let app = init_app().await;
 
     let username = "test";
     let other_username = "other_user";
     let directory_name = "new_directory";
 
-    let request_data = json!({
-        "username": username,
-        "password": "password"
-    });
-
-    // create first user
-    let request = test::TestRequest::post()
-        .uri("/users")
-        .insert_header((http::header::CONTENT_TYPE, "application/json"))
-        .set_payload(request_data.to_string())
-        .to_request();
-
-    let response = test::call_service(&app, request).await;
-
-    // get auth token for first user
-    let request = test::TestRequest::post()
-        .uri("/login")
-        .insert_header((http::header::CONTENT_TYPE, "application/json"))
-        .set_payload(String::from(request_data.to_string()))
-        .to_request();
-
-    let response = test::call_service(&app, request).await;
-    let response_body = test::read_body(response).await;
-    let token_response: TokenResponse = serde_json::from_slice(&response_body.to_vec()).unwrap();
-    let auth_token = token_response.token;
+    create_user_helper(&app, username, "password").await;
+    let auth_token = get_auth_token_helper(&app, username, "password").await;
 
     let request_data = json!({
         "username": &other_username,
@@ -119,21 +84,8 @@ async fn test_share_directory() {
 
 #[actix_web::test]
 async fn test_share_directory_other_user_does_not_exist() {
-    let app_state: Data<Arc<dyn AppState + Sync + Send>> =
-        Data::new(Arc::new(TestState::new().await) as Arc<dyn AppState + Sync + Send>);
-    let media_root = app_state.get_media_root().to_owned();
-    let app = test::init_service(
-        App::new()
-            .app_data(app_state)
-            .route(
-                "/directories/{media_path}",
-                web::post().to(create_directory),
-            )
-            .route("/share", web::post().to(share_directory))
-            .route("/users", web::post().to(create_user))
-            .route("/login", web::post().to(login)),
-    )
-    .await;
+    let media_root = "./test_media_root";
+    let app = init_app().await;
 
     let username = "test";
     let directory_name = "new_directory";

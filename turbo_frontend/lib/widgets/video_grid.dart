@@ -7,7 +7,7 @@ import 'package:turbo/widgets/video.dart';
 import '../cubit/directory_cubit.dart';
 
 class VideoGrid extends StatelessWidget {
-  final List<FileModel> videos;
+  final List<String> videos;
   VideoGrid(this.videos, {super.key});
 
   @override
@@ -32,7 +32,8 @@ class VideoGrid extends StatelessWidget {
                 maxCrossAxisExtent: 200),
             itemBuilder: (context, index) {
               // not the best null safety practice fix this
-              return Video(videos[index]);
+              return SizedBox();
+              // return Video(videos[index]);
             }),
       ],
     );

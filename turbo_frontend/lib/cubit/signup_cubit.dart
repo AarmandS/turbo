@@ -32,23 +32,4 @@ class SignupCubit extends Cubit<SignupState> {
       }
     }
   }
-
-  // void login(String username, String password) async {
-  //   bool loginSuccesful =
-  //       await _networkService.getAccessToken(username, password);
-  //   if (loginSuccesful) {
-  //     emit(AuthLoggedIn(username: username));
-  //   } else {
-  //     emit(AuthFailedLogin());
-  //     await Future.delayed(Duration(seconds: 10));
-  //     if (state is AuthFailedLogin) {
-  //       emit(AuthInitial());
-  //     }
-  //   }
-  // }
-
-  // void logout() {
-  //   _networkService.accessToken = null;
-  //   emit(AuthInitial());
-  // }
 }

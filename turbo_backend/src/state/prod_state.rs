@@ -1,5 +1,6 @@
 use super::app_state::AppState;
 use crate::repo::directory_repository::DirectoryRepository;
+use crate::repo::file_repository::{self, FileRepository};
 use crate::repo::mongo_user_repository::MongoUserRepository;
 use crate::repo::user_repository::UserRepository;
 use crate::{auth::JwtKeys, repo::mock_user_repository::MockUserRepository};
@@ -13,6 +14,7 @@ pub struct ProductionState {
     media_root: String,
     user_repository: MongoUserRepository,
     directory_repository: DirectoryRepository,
+    file_repository: FileRepository,
 }
 
 impl ProductionState {
@@ -43,11 +45,16 @@ impl ProductionState {
             shared_with_me: PathBuf::from("shared_with_me"),
         };
 
+        let file_repository = FileRepository {
+            media_root: media_root.to_owned(),
+        };
+
         Self {
             jwt_keys,
             media_root,
             user_repository,
             directory_repository,
+            file_repository,
         }
     }
 }
@@ -68,5 +75,9 @@ impl AppState for ProductionState {
 
     fn get_directory_repository(&self) -> &DirectoryRepository {
         &self.directory_repository
+    }
+
+    fn get_file_repository(&self) -> &FileRepository {
+        &self.file_repository
     }
 }

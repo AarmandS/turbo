@@ -6,7 +6,20 @@ use std::fs;
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Directory {
     pub media_path: String,
-    pub contents: HashMap<String, Vec<String>>,
+    pub directories: Vec<String>,
+    pub images: Vec<String>,
+    pub videos: Vec<String>,
+}
+
+impl Directory {
+    pub fn new(media_path: String) -> Self {
+        Directory {
+            media_path,
+            directories: vec![],
+            images: vec![],
+            videos: vec![],
+        }
+    }
 }
 
 #[derive(Deserialize)]

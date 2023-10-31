@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 import 'dart:math';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -60,10 +61,10 @@ class NetworkService {
 
   NetworkImage? getImage(String mediaUrl) {
     if (accessToken != null) {
-      var url = '$baseUrl/media/$mediaUrl';
+      var encodedPath = mediaUrl.replaceAll("/", "%2F");
+      var url = '$baseUrl/files/$encodedPath';
       var token = accessToken?.accessToken;
-      var image =
-          NetworkImage(url, headers: {'Authorization': 'Bearer $token'});
+      var image = NetworkImage(url, headers: {'Authorization': token!});
       return image;
     }
 
@@ -150,7 +151,7 @@ class NetworkService {
   }
 
   Future<FileModel> getFile(String path) async {
-    var url = Uri.http(baseUrl, 'files/$path');
+    var url = Uri.parse('$baseUrl/files/$path');
     var token = accessToken?.accessToken;
 
     var response =
@@ -160,21 +161,18 @@ class NetworkService {
   }
 
 // bad name not only image
-  Future<bool> uploadImage(
-      String path, String name, String fileExtension, String filePath) async {
-    var url = Uri.http(baseUrl, 'files/$path');
+  Future<bool> uploadFile(String path, PlatformFile file) async {
+    var encodedPath = path.replaceAll("/", "%2F");
+    var url = Uri.parse('$baseUrl/files/$encodedPath');
     var token = accessToken?.accessToken;
 
     var request = http.MultipartRequest(
       'POST',
       url,
     );
-    request.headers.addAll({'Authorization': 'Bearer $token'});
-    request.files.add(await http.MultipartFile.fromPath(
-      'file',
-      filePath,
-      contentType: MediaType('application', 'octet-stream'),
-    ));
+    request.headers.addAll({'Authorization': token!});
+    request.files.add(http.MultipartFile("file", file.readStream!, file.size,
+        filename: file.name));
 
     var response = await request.send();
     return response.statusCode == 200;

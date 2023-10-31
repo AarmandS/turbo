@@ -15,6 +15,7 @@ use crate::{
     },
     auth::TokenResponse,
     state::{app_state::AppState, test_state::TestState},
+    tests::common::{create_user_helper, get_auth_token_helper, init_app},
 };
 
 #[actix_web::test]
@@ -22,46 +23,12 @@ async fn test_get_directory_after_create() {
     let app_state: Data<Arc<dyn AppState + Sync + Send>> =
         Data::new(Arc::new(TestState::new().await) as Arc<dyn AppState + Sync + Send>);
     let media_root = app_state.get_media_root().to_owned();
-    let app = test::init_service(
-        App::new()
-            .app_data(app_state)
-            .route(
-                "/directories/{media_path}",
-                web::post().to(create_directory),
-            )
-            .route("/directories/{media_path}", web::get().to(get_directory))
-            .route("/users", web::post().to(create_user))
-            .route("/login", web::post().to(login)),
-    )
-    .await;
+    let app = init_app().await;
 
     let username = "test";
     let directory_name = "new_directory";
-    let request_data = json!({
-        "username": username,
-        "password": "password"
-    });
-
-    // create user
-    let request = test::TestRequest::post()
-        .uri("/users")
-        .insert_header((http::header::CONTENT_TYPE, "application/json"))
-        .set_payload(request_data.to_string())
-        .to_request();
-
-    let response = test::call_service(&app, request).await;
-
-    // get auth token
-    let request = test::TestRequest::post()
-        .uri("/login")
-        .insert_header((http::header::CONTENT_TYPE, "application/json"))
-        .set_payload(String::from(request_data.to_string()))
-        .to_request();
-
-    let response = test::call_service(&app, request).await;
-    let response_body = test::read_body(response).await;
-    let token_response: TokenResponse = serde_json::from_slice(&response_body.to_vec()).unwrap();
-    let auth_token = token_response.token;
+    create_user_helper(&app, username, "password").await;
+    let auth_token = get_auth_token_helper(&app, username, "password").await;
 
     let media_path = format!("{}/{}", &username, &directory_name);
     let encoded_media_path = urlencoding::encode(&media_path);
@@ -96,10 +63,10 @@ async fn test_get_directory_after_create() {
         Bytes::from(
             json!({
                 "media_path": "test/new_directory",
-                "contents": {
-                    "directories": [],
-                    "files": []
-                }
+                "directories": [],
+                "images": [],
+                "videos": []
+
             })
             .to_string()
         ),
