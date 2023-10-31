@@ -60,13 +60,12 @@ async fn test_create_directory_already_exists() {
     let media_path = format!("{}/{}", &username, &directory_name);
     let encoded_media_path = urlencoding::encode(&media_path);
     // create directory first try
-    let request = test::TestRequest::post()
+    let response = test::TestRequest::post()
         .uri(&format!("/directories/{}", encoded_media_path))
         .insert_header((http::header::AUTHORIZATION, auth_token.clone()))
         .insert_header((http::header::CONTENT_TYPE, "application/json"))
-        .to_request();
-
-    let response = test::call_service(&app, request).await;
+        .send_request(&app)
+        .await;
 
     // assert response status is CREATED
     assert_eq!(response.status(), 201);
@@ -76,15 +75,14 @@ async fn test_create_directory_already_exists() {
     assert!(Path::new(&new_directory_fs_path).exists());
 
     // create directory second try
-    let request = test::TestRequest::post()
+    let response = test::TestRequest::post()
         .uri(&format!("/directories/{}", encoded_media_path))
         .insert_header((http::header::AUTHORIZATION, auth_token))
         .insert_header((http::header::CONTENT_TYPE, "application/json"))
-        .to_request();
+        .send_request(&app)
+        .await;
 
-    let response = test::call_service(&app, request).await;
-
-    // assert response status is CREATED
+    // assert response status is CONFLICT
     assert_eq!(response.status(), 409);
 }
 
@@ -94,12 +92,11 @@ async fn test_create_directory_unauthenticated() {
 
     let encoded_media_path = urlencoding::encode("test/new_dirctory");
 
-    let request = test::TestRequest::post()
+    let response = test::TestRequest::post()
         .uri(&format!("/directories/{}", encoded_media_path))
         .insert_header((http::header::CONTENT_TYPE, "application/json"))
-        .to_request();
-
-    let response = test::call_service(&app, request).await;
+        .send_request(&app)
+        .await;
 
     assert_eq!(response.status(), 401);
 }

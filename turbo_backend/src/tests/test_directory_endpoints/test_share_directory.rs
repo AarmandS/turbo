@@ -25,37 +25,25 @@ async fn test_share_directory() {
     let app = init_app().await;
 
     let username = "test";
+    let password = "password";
     let other_username = "other_user";
     let directory_name = "new_directory";
 
-    create_user_helper(&app, username, "password").await;
-    let auth_token = get_auth_token_helper(&app, username, "password").await;
+    create_user_helper(&app, username, password).await;
+    let auth_token = get_auth_token_helper(&app, username, password).await;
 
-    let request_data = json!({
-        "username": &other_username,
-        "password": "password"
-    });
-
-    // create other user
-    let request = test::TestRequest::post()
-        .uri("/users")
-        .insert_header((http::header::CONTENT_TYPE, "application/json"))
-        .set_payload(request_data.to_string())
-        .to_request();
-
-    let response = test::call_service(&app, request).await;
+    create_user_helper(&app, other_username, password).await;
 
     let media_path = format!("{}/{}", &username, &directory_name);
     let encoded_media_path = urlencoding::encode(&media_path);
 
     // create directory
-    let request = test::TestRequest::post()
+    let response = test::TestRequest::post()
         .uri(&format!("/directories/{}", encoded_media_path))
         .insert_header((http::header::AUTHORIZATION, auth_token.clone()))
         .insert_header((http::header::CONTENT_TYPE, "application/json"))
-        .to_request();
-
-    let response = test::call_service(&app, request).await;
+        .send_request(&app)
+        .await;
 
     let share_request_data = json!({
         "media_path": format!("{}/{}", username, directory_name),
@@ -63,14 +51,13 @@ async fn test_share_directory() {
     });
 
     // share directory
-    let request = test::TestRequest::post()
+    let response = test::TestRequest::post()
         .uri("/share")
         .insert_header((http::header::AUTHORIZATION, auth_token))
         .insert_header((http::header::CONTENT_TYPE, "application/json"))
         .set_payload(share_request_data.to_string())
-        .to_request();
-
-    let response = test::call_service(&app, request).await;
+        .send_request(&app)
+        .await;
 
     // assert response status is OK
     assert_eq!(response.status(), 200);
@@ -84,48 +71,27 @@ async fn test_share_directory() {
 
 #[actix_web::test]
 async fn test_share_directory_other_user_does_not_exist() {
-    let media_root = "./test_media_root";
     let app = init_app().await;
 
     let username = "test";
+    let password = "password";
     let directory_name = "new_directory";
-    let request_data = json!({
-        "username": username,
-        "password": "password"
-    });
 
-    // create user
-    let request = test::TestRequest::post()
-        .uri("/users")
-        .insert_header((http::header::CONTENT_TYPE, "application/json"))
-        .set_payload(request_data.to_string())
-        .to_request();
-
-    let response = test::call_service(&app, request).await;
-
-    // get auth token
-    let request = test::TestRequest::post()
-        .uri("/login")
-        .insert_header((http::header::CONTENT_TYPE, "application/json"))
-        .set_payload(String::from(request_data.to_string()))
-        .to_request();
-
-    let response = test::call_service(&app, request).await;
-    let response_body = test::read_body(response).await;
-    let token_response: TokenResponse = serde_json::from_slice(&response_body.to_vec()).unwrap();
-    let auth_token = token_response.token;
+    create_user_helper(&app, username, "password").await;
+    let auth_token = get_auth_token_helper(&app, username, password).await;
 
     let media_path = format!("{}/{}", &username, &directory_name);
     let encoded_media_path = urlencoding::encode(&media_path);
 
     // create directory
-    let request = test::TestRequest::post()
+    let response = test::TestRequest::post()
         .uri(&format!("/directories/{}", encoded_media_path))
         .insert_header((http::header::AUTHORIZATION, auth_token.clone()))
         .insert_header((http::header::CONTENT_TYPE, "application/json"))
-        .to_request();
+        .send_request(&app)
+        .await;
 
-    let response = test::call_service(&app, request).await;
+    assert_eq!(response.status(), 201);
 
     let share_request_data = json!({
         "media_path": media_path,
@@ -133,14 +99,13 @@ async fn test_share_directory_other_user_does_not_exist() {
     });
 
     // share directory
-    let request = test::TestRequest::post()
+    let response = test::TestRequest::post()
         .uri("/share")
         .insert_header((http::header::AUTHORIZATION, auth_token))
         .insert_header((http::header::CONTENT_TYPE, "application/json"))
         .set_payload(share_request_data.to_string())
-        .to_request();
-
-    let response = test::call_service(&app, request).await;
+        .send_request(&app)
+        .await;
 
     // assert response status is BAD REQUEST
     assert_eq!(response.status(), 400);

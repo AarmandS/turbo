@@ -34,13 +34,13 @@ async fn test_rename_directory_after_create() {
     let encoded_media_path = urlencoding::encode(&media_path);
 
     // create directory
-    let request = test::TestRequest::post()
+    let response = test::TestRequest::post()
         .uri(&format!("/directories/{}", encoded_media_path))
         .insert_header((http::header::AUTHORIZATION, auth_token.clone()))
         .insert_header((http::header::CONTENT_TYPE, "application/json"))
-        .to_request();
+        .send_request(&app)
+        .await;
 
-    let response = test::call_service(&app, request).await;
     assert_eq!(response.status(), 201);
 
     // assert that directory was created
@@ -53,14 +53,14 @@ async fn test_rename_directory_after_create() {
         "new_name": directory_new_name,
     });
 
-    let request = test::TestRequest::put()
+    let response = test::TestRequest::put()
         .uri(&format!("/directories/{}", encoded_media_path))
         .insert_header((http::header::AUTHORIZATION, auth_token))
         .insert_header((http::header::CONTENT_TYPE, "application/json"))
         .set_payload(request_data.to_string())
-        .to_request();
+        .send_request(&app)
+        .await;
 
-    let response = test::call_service(&app, request).await;
     assert_eq!(response.status(), 200);
 
     // assert that directory with the old name does not exist anymore
