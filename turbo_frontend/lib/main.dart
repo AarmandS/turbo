@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:turbo/cubit/auth_cubit.dart';
 import 'package:turbo/cubit/signup_cubit.dart';
+import 'package:turbo/pages/image_viewer_page.dart';
 import 'package:turbo/pages/mainPage.dart';
 import 'package:turbo/pages/signup_page.dart';
 import 'package:turbo/pages/videoPage.dart';
@@ -46,6 +47,11 @@ class MainApp extends StatelessWidget {
           path: '/home',
           pageBuilder: (context, state) => NoTransitionPage<void>(
                 child: MainPage(networkService: _networkService),
+              )),
+      GoRoute(
+          path: '/image_viewer',
+          pageBuilder: (context, state) => NoTransitionPage<void>(
+                child: ImageViewerPage(_networkService),
               )),
     ]);
     return MultiBlocProvider(

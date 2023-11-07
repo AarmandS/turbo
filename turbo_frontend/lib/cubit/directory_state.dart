@@ -8,13 +8,16 @@ abstract class DirectoryState {
 }
 
 class DirectoryInitial extends DirectoryState {
-  DirectoryInitial(
-      List<String> directories, List<String> images, List<String> videos)
-      : super(directories, images, videos);
+  DirectoryInitial(super.directories, super.images, super.videos);
 }
 
 class DirectoryRefresh extends DirectoryState {
-  DirectoryRefresh(
-      List<String> directories, List<String> images, List<String> videos)
-      : super(directories, images, videos);
+  DirectoryRefresh(super.directories, super.images, super.videos);
+}
+
+class DirectoryViewingImages extends DirectoryState {
+  int selectedImageIndex;
+
+  DirectoryViewingImages(
+      this.selectedImageIndex, super.directories, super.images, super.videos);
 }

@@ -34,6 +34,7 @@ class ImageGrid extends StatelessWidget {
               // not the best null safety practice fix this
               return ImageWidget(
                 name: images[index],
+                index: index,
                 image: directoryCubit.getImage(images[index])!,
               );
             }),

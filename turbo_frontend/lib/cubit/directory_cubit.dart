@@ -83,4 +83,29 @@ class DirectoryCubit extends Cubit<DirectoryState> {
     //   });
     // }
   }
+
+  void viewImage(int imageIndex) {
+    emit(DirectoryViewingImages(
+        imageIndex, state.directories, state.images, state.videos));
+  }
+
+  void viewNextImage() {
+    if (state is DirectoryViewingImages) {
+      var index = (state as DirectoryViewingImages).selectedImageIndex;
+      if (index < state.images.length - 1) {
+        emit(DirectoryViewingImages(
+            index + 1, state.directories, state.images, state.videos));
+      }
+    }
+  }
+
+  void viewPreviousImage() {
+    if (state is DirectoryViewingImages) {
+      var index = (state as DirectoryViewingImages).selectedImageIndex;
+      if (index > 0) {
+        emit(DirectoryViewingImages(
+            index - 1, state.directories, state.images, state.videos));
+      }
+    }
+  }
 }
