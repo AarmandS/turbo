@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:turbo/models/file_model.dart';
-import 'package:turbo/widgets/photo.dart';
-import 'package:turbo/widgets/photo_grid.dart';
+import 'package:turbo/widgets/thumbnail.dart';
+import 'package:turbo/widgets/image_grid.dart';
 import 'package:turbo/widgets/video.dart';
 import 'package:turbo/widgets/video_grid.dart';
 

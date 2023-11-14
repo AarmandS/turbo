@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:turbo/cubit/directory_cubit.dart';
-import 'package:turbo/network_service.dart';
 
 class ImageViewerPage extends StatelessWidget {
-  NetworkService networkService;
-
-  ImageViewerPage(this.networkService, {super.key});
+  ImageViewerPage({super.key});
 
   @override
   Widget build(BuildContext context) {

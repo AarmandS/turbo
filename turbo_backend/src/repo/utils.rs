@@ -51,3 +51,14 @@ pub fn get_last_path_element(path: &str) -> String {
         path.to_owned()
     }
 }
+
+pub fn replace_extension(filename: &str, new_extension: &str) -> String {
+    if let Some(pos) = filename.rfind('.') {
+        let mut new_filename = filename[..pos].to_string();
+        new_filename.push_str(".");
+        new_filename.push_str(new_extension);
+        new_filename
+    } else {
+        filename.to_owned() + "." + new_extension
+    }
+}

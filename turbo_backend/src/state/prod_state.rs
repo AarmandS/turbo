@@ -3,6 +3,7 @@ use crate::repo::directory_repository::DirectoryRepository;
 use crate::repo::file_repository::{self, FileRepository};
 use crate::repo::mongo_user_repository::MongoUserRepository;
 use crate::repo::user_repository::UserRepository;
+use crate::repo::utils::concat_paths;
 use crate::{auth::JwtKeys, repo::mock_user_repository::MockUserRepository};
 use async_trait::async_trait;
 use jsonwebtoken::{DecodingKey, EncodingKey};
@@ -33,10 +34,15 @@ impl ProductionState {
 
         let media_root = env::var("TURBO_MEDIA_ROOT")
             .expect("TURBO_MEDIA_ROOT environment variable is not set.");
+        let thumbnail_dir = concat_paths(&media_root, "_thumbnails");
 
         if !Path::new(&media_root).exists() {
             fs::create_dir(&media_root)
                 .expect(&format!("Failed to create media root. {}", &media_root));
+
+            if !thumbnail_dir.exists() {
+                fs::create_dir(&thumbnail_dir).expect("Failed to create thumbnail directory.");
+            }
         }
 
         let user_repository = MongoUserRepository::new(&mongodb_uri).await; // this will be replaced by mongo repository
@@ -47,6 +53,7 @@ impl ProductionState {
 
         let file_repository = FileRepository {
             media_root: media_root.to_owned(),
+            thumbnail_dir,
         };
 
         Self {

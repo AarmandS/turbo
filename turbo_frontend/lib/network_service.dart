@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
 import 'dart:math';
-
+import 'package:http_parser/http_parser.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
 import 'package:turbo/models/token.dart';
 
 import 'models/file_model.dart';
@@ -150,15 +149,15 @@ class NetworkService {
     return DirectoryModel.fromJson(jsonDecode(response.body));
   }
 
-  Future<FileModel> getFile(String path) async {
-    var url = Uri.parse('$baseUrl/files/$path');
-    var token = accessToken?.accessToken;
+  // Future<FileModel> getFile(String path) async {
+  //   var url = Uri.parse('$baseUrl/files/$path');
+  //   var token = accessToken?.accessToken;
 
-    var response =
-        await http.get(url, headers: {'Authorization': 'Bearer $token'});
+  //   var response =
+  //       await http.get(url, headers: {'Authorization': 'Bearer $token'});
 
-    return FileModel.fromJson(jsonDecode(response.body));
-  }
+  //   return FileModel.fromJson(jsonDecode(response.body));
+  // }
 
 // bad name not only image
   Future<bool> uploadFile(String path, PlatformFile file) async {
@@ -172,9 +171,23 @@ class NetworkService {
     );
     request.headers.addAll({'Authorization': token!});
     request.files.add(http.MultipartFile("file", file.readStream!, file.size,
-        filename: file.name));
+        filename: file.name, contentType: MediaType("video", "mp4")));
+
+    // logRequestBody(request); // Log the request body
 
     var response = await request.send();
     return response.statusCode == 200;
   }
+}
+
+void logRequestBody(http.MultipartRequest request) {
+  // if (request is http.Request) {
+  debugPrint('Request URL: ${request.url}');
+  debugPrint('Request Method: ${request.method}');
+  debugPrint('Request Headers: ${request.headers}');
+  debugPrint('Request Headers: ${request.fields}');
+  // if (request.body != null) {
+  //   developer.log('Request Body: ${request.body}');
+  // }
+  // }
 }

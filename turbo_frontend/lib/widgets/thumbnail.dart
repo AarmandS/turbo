@@ -4,16 +4,20 @@ import 'package:go_router/go_router.dart';
 import 'package:turbo/cubit/directory_cubit.dart';
 import 'package:turbo/widgets/directory_menu.dart';
 
-class ImageWidget extends StatelessWidget {
+enum FileType { image, video }
+
+class Thumbnail extends StatelessWidget {
   final String name;
   final int index;
   final NetworkImage image;
+  final FileType type;
 
-  ImageWidget(
+  Thumbnail(
       {super.key,
       required this.name,
       required this.index,
-      required this.image});
+      required this.image,
+      required this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +27,12 @@ class ImageWidget extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () {
-              context.read<DirectoryCubit>().viewImage(index);
-              context.go('/image_viewer');
+              if (this.type == FileType.image) {
+                context.read<DirectoryCubit>().viewImage(index);
+                context.go('/image_viewer');
+              } else {
+                context.go('/video_viewer');
+              }
             },
             child: Image(
               image: image,

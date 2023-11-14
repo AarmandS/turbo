@@ -30,7 +30,13 @@ impl DirectoryRepository {
         let fs_path = concat_paths(&self.media_root, media_path);
         if !fs_path.exists() {
             match fs::create_dir(&fs_path) {
-                Ok(_) => Ok(()),
+                Ok(_) => {
+                    let thumbnail_dir = concat_paths(fs_path.to_str().unwrap(), "_thumbnails");
+                    match fs::create_dir(&thumbnail_dir) {
+                        Ok(_) => Ok(()),
+                        Err(_) => Err(DirectoryRepositoryError::FailedToCreateDirectory),
+                    }
+                }
                 Err(_) => Err(DirectoryRepositoryError::FailedToCreateDirectory),
             }
         } else {
@@ -50,7 +56,7 @@ impl DirectoryRepository {
                     let name = entry.file_name().clone().into_string().ok()?;
                     println!("{}", name);
                     // this is only valid for sharing directories
-                    if metadata.is_dir() || metadata.is_symlink() {
+                    if (metadata.is_dir() || metadata.is_symlink()) && name != "_thumbnails" {
                         directory.directories.push(name);
                     } else if metadata.is_file() {
                         match get_file_type(&name) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:turbo/models/file_model.dart';
-import 'package:turbo/widgets/photo.dart';
+import 'package:turbo/widgets/thumbnail.dart';
 import 'package:turbo/widgets/video.dart';
 
 import '../cubit/directory_cubit.dart';
@@ -32,7 +32,7 @@ class VideoGrid extends StatelessWidget {
                 maxCrossAxisExtent: 200),
             itemBuilder: (context, index) {
               // not the best null safety practice fix this
-              return SizedBox();
+              return Text('video');
               // return Video(videos[index]);
             }),
       ],

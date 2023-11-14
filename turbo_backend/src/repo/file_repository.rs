@@ -1,13 +1,22 @@
-use std::{fs::File, io::Write, path::Path};
+use std::{
+    fs::File,
+    io::{BufReader, Cursor, Write},
+    path::{Path, PathBuf},
+};
+
+use std::process::Command;
 
 use actix_files::NamedFile;
 use actix_multipart::Field;
 use futures::TryStreamExt;
+use mime::Mime;
+use thumbnailer::{create_thumbnails, ThumbnailSize};
 
-use super::utils::concat_paths;
+use super::utils::{concat_paths, replace_extension};
 
 pub struct FileRepository {
     pub media_root: String, // media root should be pathbuf
+    pub thumbnail_dir: PathBuf,
 }
 
 impl FileRepository {
@@ -21,13 +30,68 @@ impl FileRepository {
             media_path,
             file.content_disposition().get_filename().unwrap(),
         );
+
         let fs_path = concat_paths(&self.media_root, file_media_path.to_str().unwrap());
-        let mut saved_file: File = File::create(fs_path).unwrap();
+
+        let mut saved_file: File = File::create(&fs_path).unwrap();
         while let Ok(Some(chunk)) = file.try_next().await {
             let _ = saved_file.write_all(&chunk).unwrap();
         }
 
+        let filename = file.content_disposition().get_filename().unwrap();
+        let file_mime = file.content_type().unwrap();
+        self.create_thumbnail(&fs_path, media_path, filename, file_mime);
+
         Ok(())
+    }
+
+    fn create_thumbnail(
+        &self,
+        file_fs_path: &PathBuf,
+        media_path: &str,
+        filename: &str,
+        mime: &Mime,
+    ) {
+        let thumbnail_fs_path = format!(
+            "{}/{}/_thumbnails/{}",
+            self.media_root,
+            media_path,
+            replace_extension(filename, "png") // replace filename extension with png in every case
+        );
+        match mime.type_() {
+            mime::IMAGE => {
+                println!("{:?}", mime.type_());
+                let file = File::open(file_fs_path).unwrap();
+                let reader = BufReader::new(file);
+                let mut thumbnails = create_thumbnails(
+                    reader,
+                    mime::IMAGE_JPEG, // this has to be exact, also on the flutter side, gotta decide what formats to support
+                    // i guess to start with jpeg, png, and mp4 are enough
+                    [ThumbnailSize::Custom((140, 140))],
+                )
+                .unwrap();
+
+                let thumbnail = thumbnails.pop().unwrap();
+                let mut thumbnail_file: File = File::create(thumbnail_fs_path).unwrap();
+                thumbnail.write_png(&mut thumbnail_file).unwrap();
+            }
+            mime::VIDEO => {
+                let command = Command::new("ffmpeg")
+                    .args([
+                        "-i",
+                        file_fs_path.to_str().unwrap(),
+                        "-vf",
+                        "select=eq(n\\,0),scale=140:140",
+                        "-vframes",
+                        "1",
+                        &thumbnail_fs_path,
+                    ])
+                    .spawn();
+            }
+            _ => {
+                println!("{:?}", mime.type_())
+            }
+        }
     }
 
     pub async fn get_file(&self, media_path: &str) -> Option<NamedFile> {

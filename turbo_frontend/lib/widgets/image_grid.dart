@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:turbo/models/file_model.dart';
-import 'package:turbo/widgets/photo.dart';
+import 'package:turbo/widgets/thumbnail.dart';
 
 import '../cubit/directory_cubit.dart';
 
@@ -32,10 +32,11 @@ class ImageGrid extends StatelessWidget {
                 maxCrossAxisExtent: 200),
             itemBuilder: (context, index) {
               // not the best null safety practice fix this
-              return ImageWidget(
+              return Thumbnail(
                 name: images[index],
                 index: index,
                 image: directoryCubit.getImage(images[index])!,
+                type: FileType.image,
               );
             }),
       ],

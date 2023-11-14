@@ -11,6 +11,7 @@ import 'package:turbo/pages/image_viewer_page.dart';
 import 'package:turbo/pages/mainPage.dart';
 import 'package:turbo/pages/signup_page.dart';
 import 'package:turbo/pages/videoPage.dart';
+import 'package:turbo/pages/video_viewer_page.dart';
 import 'package:video_player_win/video_player_win_plugin.dart';
 
 import 'cubit/directory_cubit.dart';
@@ -51,7 +52,12 @@ class MainApp extends StatelessWidget {
       GoRoute(
           path: '/image_viewer',
           pageBuilder: (context, state) => NoTransitionPage<void>(
-                child: ImageViewerPage(_networkService),
+                child: ImageViewerPage(),
+              )),
+      GoRoute(
+          path: '/video_viewer',
+          pageBuilder: (context, state) => NoTransitionPage<void>(
+                child: VideoViewerPage(),
               )),
     ]);
     return MultiBlocProvider(
