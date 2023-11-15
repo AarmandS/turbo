@@ -2,8 +2,8 @@ part of 'directory_cubit.dart';
 
 abstract class DirectoryState {
   List<String> directories = [];
-  List<String> images = [];
-  List<String> videos = [];
+  List<MediaFile> images = [];
+  List<MediaFile> videos = [];
   DirectoryState(this.directories, this.images, this.videos);
 }
 

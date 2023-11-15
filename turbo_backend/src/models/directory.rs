@@ -3,12 +3,14 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
 
+use super::media_file::MediaFile;
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Directory {
     pub media_path: String,
     pub directories: Vec<String>,
-    pub images: Vec<String>,
-    pub videos: Vec<String>,
+    pub images: Vec<MediaFile>,
+    pub videos: Vec<MediaFile>,
 }
 
 impl Directory {

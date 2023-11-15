@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:turbo/models/file_model.dart';
+import 'package:turbo/models/media_file.dart';
 import 'package:turbo/widgets/thumbnail.dart';
 import 'package:turbo/widgets/image_grid.dart';
 import 'package:turbo/widgets/video.dart';
@@ -9,8 +9,8 @@ import 'package:turbo/widgets/video_grid.dart';
 import '../cubit/directory_cubit.dart';
 
 class FileGrid extends StatelessWidget {
-  late List<String> photos = [];
-  late List<String> videos = [];
+  late List<MediaFile> photos = [];
+  late List<MediaFile> videos = [];
 
   FileGrid({super.key});
 

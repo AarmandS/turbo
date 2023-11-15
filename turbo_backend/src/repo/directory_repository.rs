@@ -1,4 +1,5 @@
 use crate::models::directory::Directory;
+use crate::models::media_file::MediaFile;
 use crate::repo::utils::{get_file_type, FileType};
 use std::collections::HashMap;
 use std::ffi::OsStr;
@@ -54,18 +55,25 @@ impl DirectoryRepository {
                     let entry = &entry.ok()?;
                     let metadata = fs::metadata(entry.path()).ok()?;
                     let name = entry.file_name().clone().into_string().ok()?;
-                    println!("{}", name);
+
                     // this is only valid for sharing directories
                     if (metadata.is_dir() || metadata.is_symlink()) && name != "_thumbnails" {
                         directory.directories.push(name);
                     } else if metadata.is_file() {
+                        let file = MediaFile {
+                            thumbnail: format!("_thumbnails/{}.png", name),
+                            full_size: name.clone(), // maybe can avoid cloning
+                        };
+
                         match get_file_type(&name) {
-                            FileType::Image => directory.images.push(name),
-                            FileType::Video => directory.videos.push(name),
+                            FileType::Image => directory.images.push(file),
+                            FileType::Video => directory.videos.push(file),
                             FileType::Unknown => {}
                         }
                     }
                 }
+
+                println!("{:?}", serde_json::to_string(&directory));
 
                 Some(directory)
             }

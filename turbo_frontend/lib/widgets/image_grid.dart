@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:turbo/models/file_model.dart';
+import 'package:turbo/models/media_file.dart';
 import 'package:turbo/widgets/thumbnail.dart';
 
 import '../cubit/directory_cubit.dart';
 
 class ImageGrid extends StatelessWidget {
-  final List<String> images;
+  final List<MediaFile> images;
   ImageGrid(this.images, {super.key});
 
   @override
@@ -33,9 +33,9 @@ class ImageGrid extends StatelessWidget {
             itemBuilder: (context, index) {
               // not the best null safety practice fix this
               return Thumbnail(
-                name: images[index],
+                name: images[index].full_size,
                 index: index,
-                image: directoryCubit.getImage(images[index])!,
+                image: directoryCubit.getImage(images[index].thumbnail)!,
                 type: FileType.image,
               );
             }),

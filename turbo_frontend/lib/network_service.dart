@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:turbo/models/token.dart';
 
-import 'models/file_model.dart';
+import 'models/media_file.dart';
 import 'models/directory_model.dart';
 import 'dart:developer' as developer;
 
@@ -170,8 +170,11 @@ class NetworkService {
       url,
     );
     request.headers.addAll({'Authorization': token!});
+
+    var contentType = file.extension! == "mp4" ? "video" : "image";
     request.files.add(http.MultipartFile("file", file.readStream!, file.size,
-        filename: file.name, contentType: MediaType("video", "mp4")));
+        filename: file.name,
+        contentType: MediaType(contentType, file.extension!)));
 
     // logRequestBody(request); // Log the request body
 

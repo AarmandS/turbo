@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:turbo/models/file_model.dart';
+import 'package:turbo/models/media_file.dart';
 import 'package:turbo/widgets/thumbnail.dart';
 import 'package:turbo/widgets/video.dart';
 
 import '../cubit/directory_cubit.dart';
 
 class VideoGrid extends StatelessWidget {
-  final List<String> videos;
+  final List<MediaFile> videos;
   VideoGrid(this.videos, {super.key});
 
   @override
   Widget build(BuildContext context) {
+    var directoryCubit = context.read<DirectoryCubit>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -31,9 +32,13 @@ class VideoGrid extends StatelessWidget {
             gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 200),
             itemBuilder: (context, index) {
-              // not the best null safety practice fix this
-              return Text('video');
-              // return Video(videos[index]);
+              return Thumbnail(
+                name: videos[index].full_size,
+                index: index,
+                image: directoryCubit.getImage(videos[index].thumbnail)!,
+                type: FileType
+                    .image, // change this to video when video viewer page will be ready
+              );
             }),
       ],
     );

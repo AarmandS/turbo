@@ -1,23 +1,16 @@
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use crate::{
-    auth::{get_token, AuthenticationToken, TokenResponse},
+    auth::{get_token, TokenResponse},
     models::user::User,
     repo::directory_repository::DirectoryRepositoryError,
     state::app_state::AppState,
 };
 
 use actix_web::{
-    get,
-    middleware::Logger,
-    post,
-    web::Data,
-    web::Path,
     web::{self, Json},
-    App, HttpResponse, HttpServer, Responder,
+    HttpResponse, Responder,
 };
-use serde_json::json;
-use std::fs;
 
 pub async fn create_user(
     state: web::Data<Arc<dyn AppState + Sync + Send>>,
@@ -59,15 +52,3 @@ pub async fn login(
         Err(_) => HttpResponse::Unauthorized().body(()),
     }
 }
-
-// pub async fn get_user(
-//     auth_token: AuthenticationToken,
-//     state: web::Data<Arc<dyn AppState + Sync + Send>>,
-//     username: Path<String>,
-// ) -> impl Responder {
-//     let user = state.get_user_repository().get_user(&username).await;
-//     match user {
-//         Some(user) => HttpResponse::Ok(),
-//         None => HttpResponse::NotFound(),
-//     }
-// }

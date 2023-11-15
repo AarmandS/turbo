@@ -53,23 +53,18 @@ impl FileRepository {
         mime: &Mime,
     ) {
         let thumbnail_fs_path = format!(
-            "{}/{}/_thumbnails/{}",
-            self.media_root,
-            media_path,
-            replace_extension(filename, "png") // replace filename extension with png in every case
+            "{}/{}/_thumbnails/{}.png",
+            self.media_root, media_path, filename
         );
+
         match mime.type_() {
             mime::IMAGE => {
                 println!("{:?}", mime.type_());
                 let file = File::open(file_fs_path).unwrap();
                 let reader = BufReader::new(file);
-                let mut thumbnails = create_thumbnails(
-                    reader,
-                    mime::IMAGE_JPEG, // this has to be exact, also on the flutter side, gotta decide what formats to support
-                    // i guess to start with jpeg, png, and mp4 are enough
-                    [ThumbnailSize::Custom((140, 140))],
-                )
-                .unwrap();
+                let mut thumbnails =
+                    create_thumbnails(reader, mime.clone(), [ThumbnailSize::Custom((140, 140))])
+                        .unwrap();
 
                 let thumbnail = thumbnails.pop().unwrap();
                 let mut thumbnail_file: File = File::create(thumbnail_fs_path).unwrap();

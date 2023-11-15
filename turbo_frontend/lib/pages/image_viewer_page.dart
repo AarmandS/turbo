@@ -27,10 +27,10 @@ class ImageViewerPage extends StatelessWidget {
                   width: 1800,
                   height: 900,
                   child: Image(
-                      image: directoryCubit
-                          .getImage(state.images[state.selectedImageIndex])!),
+                      image: directoryCubit.getImage(
+                          state.images[state.selectedImageIndex].full_size)!),
                 ), // ! bad
-                Text(state.images[state.selectedImageIndex]),
+                Text(state.images[state.selectedImageIndex].full_size),
               ],
             ),
             IconButton(

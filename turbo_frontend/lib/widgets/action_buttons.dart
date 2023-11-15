@@ -74,7 +74,7 @@ class ActionButtons extends StatelessWidget {
               type: FileType.custom,
               withReadStream: true,
               // these are constants which should be in a central location
-              allowedExtensions: ['jpg', 'png', 'mp4', 'mkv'],
+              allowedExtensions: ['jpg', 'png', 'mp4'],
               withData: true);
           if (fileResult != null) {
             // will handle this in a single request
