@@ -5,6 +5,7 @@ WORKDIR /app
 COPY ./src/ ./src/
 COPY ./Cargo.toml ./Cargo.toml
 
+RUN apt-get update && apt-get install -y ffmpeg
 RUN cargo build --release
 
 EXPOSE 8080
