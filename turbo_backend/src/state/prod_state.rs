@@ -66,7 +66,6 @@ impl ProductionState {
     }
 }
 
-#[async_trait]
 impl AppState for ProductionState {
     fn get_jwt_keys(&self) -> &JwtKeys {
         &self.jwt_keys

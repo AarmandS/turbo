@@ -62,7 +62,6 @@ impl TestState {
     }
 }
 
-#[async_trait]
 impl AppState for TestState {
     fn get_jwt_keys(&self) -> &JwtKeys {
         &self.jwt_keys
