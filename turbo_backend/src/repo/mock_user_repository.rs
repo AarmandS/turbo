@@ -53,12 +53,4 @@ impl UserRepository for MockUserRepository {
         }
         None
     }
-
-    async fn get_users(&self) -> &Vec<User> {
-        todo!()
-    }
-
-    async fn delete_user(&self, username: &str) -> Result<(), ()> {
-        todo!()
-    }
 }

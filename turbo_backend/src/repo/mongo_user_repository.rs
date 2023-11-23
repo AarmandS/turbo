@@ -91,12 +91,4 @@ impl UserRepository for MongoUserRepository {
             .await
             .expect("MongoDB error when getting user.")
     }
-
-    async fn get_users(&self) -> &Vec<User> {
-        todo!()
-    }
-
-    async fn delete_user(&self, username: &str) -> Result<(), ()> {
-        todo!()
-    }
 }
