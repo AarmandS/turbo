@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:turbo/cubit/directory_cubit.dart';
+import 'dart:html';
 
 class ImageViewerPage extends StatelessWidget {
   ImageViewerPage({super.key});
@@ -11,6 +13,13 @@ class ImageViewerPage extends StatelessWidget {
         builder: (context, state) {
       if (state is DirectoryViewingImages) {
         var directoryCubit = context.read<DirectoryCubit>();
+        window.onKeyUp.listen((KeyboardEvent e) {
+          if (e.key == 'a') {
+            directoryCubit.viewPreviousImage();
+          } else if (e.key == 'd') {
+            directoryCubit.viewNextImage();
+          }
+        });
         return Scaffold(
           backgroundColor: Colors.blueGrey.shade50,
           body:

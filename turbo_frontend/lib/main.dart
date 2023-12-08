@@ -10,7 +10,6 @@ import 'package:turbo/cubit/signup_cubit.dart';
 import 'package:turbo/pages/image_viewer_page.dart';
 import 'package:turbo/pages/mainPage.dart';
 import 'package:turbo/pages/signup_page.dart';
-import 'package:turbo/pages/videoPage.dart';
 import 'package:turbo/pages/video_viewer_page.dart';
 import 'package:video_player_win/video_player_win_plugin.dart';
 
