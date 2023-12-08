@@ -33,11 +33,11 @@ class VideoGrid extends StatelessWidget {
                 maxCrossAxisExtent: 200),
             itemBuilder: (context, index) {
               return Thumbnail(
-                name: videos[index].full_size,
+                name: videos[index].fullSize,
                 index: index,
                 image: directoryCubit.getImage(videos[index].thumbnail)!,
                 type: FileType
-                    .image, // change this to video when video viewer page will be ready
+                    .video, // change this to video when video viewer page will be ready
               );
             }),
       ],

@@ -3,14 +3,14 @@ use crate::repo::directory_repository::DirectoryRepository;
 use crate::repo::file_repository::FileRepository;
 use crate::repo::user_repository::UserRepository;
 use crate::repo::utils::concat_paths;
-use crate::{auth::JwtKeys, repo::mock_user_repository::MockUserRepository};
+use crate::{auth::JWTKeys, repo::mock_user_repository::MockUserRepository};
 use async_trait::async_trait;
 use jsonwebtoken::{DecodingKey, EncodingKey};
 use std::path::PathBuf;
 use std::{fs, path::Path};
 
 pub struct TestState {
-    jwt_keys: JwtKeys,
+    jwt_keys: JWTKeys,
     media_root: String,
     user_repository: MockUserRepository,
     directory_repository: DirectoryRepository,
@@ -22,7 +22,7 @@ impl TestState {
         let jwt_secret = String::from("very_secret_secret");
         let encoding_key = EncodingKey::from_secret(jwt_secret.as_ref());
         let decoding_key = DecodingKey::from_secret(jwt_secret.as_ref());
-        let jwt_keys = JwtKeys {
+        let jwt_keys = JWTKeys {
             encoding_key,
             decoding_key,
         };
@@ -63,7 +63,7 @@ impl TestState {
 }
 
 impl AppState for TestState {
-    fn get_jwt_keys(&self) -> &JwtKeys {
+    fn get_jwt_keys(&self) -> &JWTKeys {
         &self.jwt_keys
     }
 

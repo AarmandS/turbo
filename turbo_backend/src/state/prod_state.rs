@@ -4,14 +4,14 @@ use crate::repo::file_repository::{self, FileRepository};
 use crate::repo::mongo_user_repository::MongoUserRepository;
 use crate::repo::user_repository::UserRepository;
 use crate::repo::utils::concat_paths;
-use crate::{auth::JwtKeys, repo::mock_user_repository::MockUserRepository};
+use crate::{auth::JWTKeys, repo::mock_user_repository::MockUserRepository};
 use async_trait::async_trait;
 use jsonwebtoken::{DecodingKey, EncodingKey};
 use std::path::PathBuf;
 use std::{env, fs, path::Path};
 
 pub struct ProductionState {
-    jwt_keys: JwtKeys,
+    jwt_keys: JWTKeys,
     media_root: String,
     user_repository: MongoUserRepository,
     directory_repository: DirectoryRepository,
@@ -27,7 +27,7 @@ impl ProductionState {
 
         let encoding_key = EncodingKey::from_secret(jwt_secret.as_ref());
         let decoding_key = DecodingKey::from_secret(jwt_secret.as_ref());
-        let jwt_keys = JwtKeys {
+        let jwt_keys = JWTKeys {
             encoding_key,
             decoding_key,
         };
@@ -67,7 +67,7 @@ impl ProductionState {
 }
 
 impl AppState for ProductionState {
-    fn get_jwt_keys(&self) -> &JwtKeys {
+    fn get_jwt_keys(&self) -> &JWTKeys {
         &self.jwt_keys
     }
 

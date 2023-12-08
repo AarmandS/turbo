@@ -20,7 +20,7 @@ import 'network_service.dart';
 import 'pages/loginPage.dart';
 
 void main() {
-  if (!kIsWeb && Platform.isWindows) WindowsVideoPlayer.registerWith();
+  // if (!kIsWeb && Platform.isWindows) WindowsVideoPlayer.registerWith();
 
   runApp(MainApp());
 }
@@ -47,7 +47,7 @@ class MainApp extends StatelessWidget {
       GoRoute(
           path: '/home',
           pageBuilder: (context, state) => NoTransitionPage<void>(
-                child: MainPage(networkService: _networkService),
+                child: HomePage(networkService: _networkService),
               )),
       GoRoute(
           path: '/image_viewer',

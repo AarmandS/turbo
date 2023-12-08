@@ -1,8 +1,8 @@
 class MediaFile {
   String thumbnail;
-  String full_size;
+  String fullSize;
 
   MediaFile.fromJson(Map<String, dynamic> json)
       : thumbnail = json['thumbnail'],
-        full_size = json['full_size'];
+        fullSize = json['full_size'];
 }

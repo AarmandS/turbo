@@ -33,7 +33,7 @@ class ImageGrid extends StatelessWidget {
             itemBuilder: (context, index) {
               // not the best null safety practice fix this
               return Thumbnail(
-                name: images[index].full_size,
+                name: images[index].fullSize,
                 index: index,
                 image: directoryCubit.getImage(images[index].thumbnail)!,
                 type: FileType.image,

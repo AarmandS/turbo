@@ -45,19 +45,17 @@ pub async fn upload_file(
 
 pub async fn get_file(
     req: HttpRequest,
-    auth_token: AuthenticationToken,
+    // auth_token: AuthenticationToken,
     state: web::Data<Arc<dyn AppState + Sync + Send>>,
     media_path: web::Path<String>,
 ) -> HttpResponse {
-    // resource path should be smth like : images/armand/kepek/turbo.jpg url encoded
-    // check permissions
     let decoded_media_path = urlencoding::decode(&media_path)
         .expect("UTF-8")
         .into_owned();
 
-    if !user_has_permission(&auth_token.sub, &decoded_media_path) {
-        return HttpResponse::Forbidden().body("The user cannot access the given resource.");
-    }
+    // if !user_has_permission(&auth_token.sub, &decoded_media_path) {
+    //     return HttpResponse::Forbidden().into();
+    // }
 
     match state
         .get_file_repository()

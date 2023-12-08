@@ -7,10 +7,10 @@ import '../widgets/file_grid.dart';
 import '../widgets/directory_grid.dart';
 import '../widgets/sidebar.dart';
 
-class MainPage extends StatelessWidget {
+class HomePage extends StatelessWidget {
   NetworkService networkService;
 
-  MainPage({super.key, required this.networkService});
+  HomePage({super.key, required this.networkService});
 
   @override
   Widget build(BuildContext context) {

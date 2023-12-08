@@ -16,28 +16,35 @@ class ImageViewerPage extends StatelessWidget {
           body:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             IconButton(
-                onPressed: () {
-                  directoryCubit.viewPreviousImage();
-                },
-                icon: Icon(Icons.navigate_before)),
+              onPressed: () {
+                directoryCubit.viewPreviousImage();
+              },
+              icon: Icon(Icons.navigate_before),
+              iconSize: 44.0,
+            ),
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 SizedBox(
                   width: 1800,
-                  height: 900,
+                  height: 850,
                   child: Image(
                       image: directoryCubit.getImage(
-                          state.images[state.selectedImageIndex].full_size)!),
+                          state.images[state.selectedImageIndex].fullSize)!),
                 ), // ! bad
-                Text(state.images[state.selectedImageIndex].full_size),
+                Text(
+                  state.images[state.selectedImageIndex].fullSize,
+                  style: TextStyle(fontSize: 25),
+                ),
               ],
             ),
             IconButton(
-                onPressed: () {
-                  directoryCubit.viewNextImage();
-                },
-                icon: Icon(Icons.navigate_next)),
+              onPressed: () {
+                directoryCubit.viewNextImage();
+              },
+              icon: Icon(Icons.navigate_next),
+              iconSize: 44.0,
+            ),
           ]),
         );
       }

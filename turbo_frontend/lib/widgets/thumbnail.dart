@@ -31,6 +31,7 @@ class Thumbnail extends StatelessWidget {
                 context.read<DirectoryCubit>().viewImage(index);
                 context.go('/image_viewer');
               } else {
+                context.read<DirectoryCubit>().viewVideo(name);
                 context.go('/video_viewer');
               }
             },

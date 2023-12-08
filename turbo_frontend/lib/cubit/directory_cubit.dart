@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:turbo/models/token.dart';
 
 import '../models/media_file.dart';
 import '../network_service.dart';
@@ -74,6 +75,16 @@ class DirectoryCubit extends Cubit<DirectoryState> {
     return _networkService.getImage('$navigationPath/$filename');
   }
 
+  String getVideoURL() {
+    if (state is DirectoryViewingVideo) {
+      var videoState = state as DirectoryViewingVideo;
+      var encodedPath =
+          '$navigationPath/${videoState.filename}'.replaceAll("/", "%2F");
+      return '$baseUrl/files/$encodedPath';
+    }
+    return '';
+  }
+
   void uploadFile(PlatformFile file) async {
     var success = await _networkService.uploadFile(navigationPath, file);
     // TODO: fix getting files after upload
@@ -108,5 +119,14 @@ class DirectoryCubit extends Cubit<DirectoryState> {
             index - 1, state.directories, state.images, state.videos));
       }
     }
+  }
+
+  void viewVideo(String filename) {
+    emit(DirectoryViewingVideo(
+        filename, state.directories, state.images, state.videos));
+  }
+
+  String getToken() {
+    return _networkService.accessToken!.accessToken;
   }
 }

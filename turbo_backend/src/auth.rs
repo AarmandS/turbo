@@ -10,9 +10,9 @@ use chrono::{Duration, Utc};
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Validation};
 use serde::{Deserialize, Serialize};
 
-use crate::state::{app_state::AppState, test_state::TestState};
+use crate::state::app_state::AppState;
 
-pub struct JwtKeys {
+pub struct JWTKeys {
     pub encoding_key: EncodingKey,
     pub decoding_key: DecodingKey,
 }
@@ -47,7 +47,7 @@ impl FromRequest for AuthenticationToken {
             },
             None => return ready(Err(ErrorUnauthorized("Unauthorized."))),
         };
-        // use box for the state
+
         let decoding_key = &request
             .app_data::<Data<Arc<dyn AppState + Sync + Send>>>()
             .expect("Could not get app data.")

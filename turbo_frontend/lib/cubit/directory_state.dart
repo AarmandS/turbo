@@ -21,3 +21,10 @@ class DirectoryViewingImages extends DirectoryState {
   DirectoryViewingImages(
       this.selectedImageIndex, super.directories, super.images, super.videos);
 }
+
+class DirectoryViewingVideo extends DirectoryState {
+  String filename;
+
+  DirectoryViewingVideo(
+      this.filename, super.directories, super.images, super.videos);
+}
