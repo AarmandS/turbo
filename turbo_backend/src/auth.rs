@@ -80,6 +80,11 @@ pub fn get_token(username: &str, encoding_key: &EncodingKey) -> String {
 
 // media_path should not contain leading slash
 pub fn user_has_permission(username: &str, media_path: &str) -> bool {
+    // navigating to parent directories is not allowed, because it could be used to access other users' resources
+    if media_path.contains("../") {
+        return false;
+    }
+
     let media_path_split: Vec<_> = media_path.split("/").collect();
     let media_path_first_element = media_path_split.first();
     if media_path_first_element.is_none() {
