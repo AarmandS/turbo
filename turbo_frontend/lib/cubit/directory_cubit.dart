@@ -51,12 +51,6 @@ class DirectoryCubit extends Cubit<DirectoryState> {
     await _networkService
         .getDirectory(navigationPath)
         .then((directoryModel) async {
-      // var fileModels =
-      //     await Future.wait(directoryModel.containedFiles.map((filePath) async {
-      //   FileModel file =
-      //       await _networkService.getFile('$navigationPath/$filePath');
-      //   return file;
-      // }).toList());
       emit(DirectoryRefresh(directoryModel.directories, directoryModel.images,
           directoryModel.videos));
     });
@@ -87,12 +81,13 @@ class DirectoryCubit extends Cubit<DirectoryState> {
 
   void uploadFile(PlatformFile file) async {
     var success = await _networkService.uploadFile(navigationPath, file);
-    // TODO: fix getting files after upload
     // if (success) {
-    //   await _networkService.getFile('$navigationPath/$name').then((fileModel) {
-    //     state.files.add(fileModel);
-    //     emit(DirectoryRefresh(state.directories, state.files));
-    //   });
+    await _networkService
+        .getDirectory(navigationPath)
+        .then((directoryModel) async {
+      emit(DirectoryRefresh(directoryModel.directories, directoryModel.images,
+          directoryModel.videos));
+    });
     // }
   }
 
