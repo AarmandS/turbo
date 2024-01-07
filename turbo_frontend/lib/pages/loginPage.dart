@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:turbo/cubit/auth_cubit.dart';
 import 'package:turbo/cubit/directory_cubit.dart';
 import 'package:turbo/cubit/media_cubit.dart';
@@ -18,11 +19,13 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _usernameTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
+  var _isRememberMeChecked = false;
 
   @override
   Widget build(BuildContext context) {
     var authCubit = context.watch<AuthCubit>();
     var mediaCubit = context.watch<MediaCubit>();
+    authCubit.tryLogin();
 
     if (authCubit.state is AuthLoggedIn) {
       context
@@ -63,12 +66,35 @@ class _LoginPageState extends State<LoginPage> {
                 )),
           ),
           SizedBox(
-            height: 16,
+            height: 8,
+          ),
+          SizedBox(
+            width: 140,
+            child: Center(
+              child: Row(children: [
+                Checkbox(
+                    value: _isRememberMeChecked,
+                    onChanged: (value) {
+                      setState(() {
+                        if (value != null) {
+                          _isRememberMeChecked = value;
+                        }
+                      });
+                    }),
+                Text(
+                  'Remember me',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                )
+              ]),
+            ),
+          ),
+          SizedBox(
+            height: 8,
           ),
           ElevatedButton(
             onPressed: () {
-              authCubit.login(
-                  _usernameTextController.text, _passwordTextController.text);
+              authCubit.login(_usernameTextController.text,
+                  _passwordTextController.text, _isRememberMeChecked);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.indigo.shade300,

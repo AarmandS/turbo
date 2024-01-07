@@ -9,6 +9,7 @@ import 'package:turbo/cubit/auth_cubit.dart';
 import 'package:turbo/cubit/signup_cubit.dart';
 import 'package:turbo/pages/image_viewer_page.dart';
 import 'package:turbo/pages/mainPage.dart';
+import 'package:turbo/pages/profile_page.dart';
 import 'package:turbo/pages/signup_page.dart';
 import 'package:turbo/pages/video_viewer_page.dart';
 import 'package:video_player_win/video_player_win_plugin.dart';
@@ -47,6 +48,11 @@ class MainApp extends StatelessWidget {
           path: '/home',
           pageBuilder: (context, state) => NoTransitionPage<void>(
                 child: HomePage(networkService: _networkService),
+              )),
+      GoRoute(
+          path: '/profile',
+          pageBuilder: (context, state) => NoTransitionPage<void>(
+                child: ProfilePage(),
               )),
       GoRoute(
           path: '/image_viewer',

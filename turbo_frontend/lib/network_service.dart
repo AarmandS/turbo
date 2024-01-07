@@ -22,9 +22,9 @@ class NetworkService {
     var url = Uri.parse('$baseUrl/login');
 
     final Map<String, String> headers = {
-      'Content-Type': 'application/json', // Set the Content-Type here
+      'Content-Type': 'application/json',
     };
-    // fix on web
+
     var response = await http.post(url,
         body: jsonEncode({'username': username, 'password': password}),
         headers: headers);
@@ -41,7 +41,7 @@ class NetworkService {
     var url = Uri.parse('$baseUrl/users');
 
     final Map<String, String> headers = {
-      'Content-Type': 'application/json', // Set the Content-Type here
+      'Content-Type': 'application/json',
     };
     // fix on web
     var response = await http.post(url,
@@ -149,17 +149,6 @@ class NetworkService {
     return DirectoryModel.fromJson(jsonDecode(response.body));
   }
 
-  // Future<FileModel> getFile(String path) async {
-  //   var url = Uri.parse('$baseUrl/files/$path');
-  //   var token = accessToken?.accessToken;
-
-  //   var response =
-  //       await http.get(url, headers: {'Authorization': 'Bearer $token'});
-
-  //   return FileModel.fromJson(jsonDecode(response.body));
-  // }
-
-// bad name not only image
   Future<bool> uploadFile(String path, PlatformFile file) async {
     var encodedPath = path.replaceAll("/", "%2F");
     var url = Uri.parse('$baseUrl/files/$encodedPath');
@@ -176,21 +165,7 @@ class NetworkService {
         filename: file.name,
         contentType: MediaType(contentType, file.extension!)));
 
-    // logRequestBody(request); // Log the request body
-
     var response = await request.send();
     return response.statusCode == 200;
   }
-}
-
-void logRequestBody(http.MultipartRequest request) {
-  // if (request is http.Request) {
-  debugPrint('Request URL: ${request.url}');
-  debugPrint('Request Method: ${request.method}');
-  debugPrint('Request Headers: ${request.headers}');
-  debugPrint('Request Headers: ${request.fields}');
-  // if (request.body != null) {
-  //   developer.log('Request Body: ${request.body}');
-  // }
-  // }
 }

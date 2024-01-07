@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use mongodb::bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 
@@ -7,4 +9,11 @@ pub struct User {
     pub id: Option<ObjectId>,
     pub username: String,
     pub password: String,
+}
+
+pub struct UserInfo {
+    pub username: String,
+    pub space_taken: u128,
+    pub files_uploaded: u64,
+    // pub profile_picture: Path,
 }

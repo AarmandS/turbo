@@ -36,6 +36,17 @@ pub async fn create_user(
     }
 }
 
+pub async fn get_user(
+    state: web::Data<Arc<dyn AppState + Sync + Send>>,
+    username: web::Path<String>,
+) -> impl Responder {
+    // return data about used space, uploaded files, profile picture
+    let user_repo = state.get_user_repository();
+
+    user_repo.get_user_info(username)
+    HttpResponse::Ok()
+}
+
 pub async fn login(
     state: web::Data<Arc<dyn AppState + Sync + Send>>,
     credentials: Json<User>,

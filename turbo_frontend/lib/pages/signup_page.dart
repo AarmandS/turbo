@@ -28,7 +28,7 @@ class _SignupPageState extends State<SignupPage> {
 
     if (signupCubit.state is SignupSuccesful) {
       var state = signupCubit.state as SignupSuccesful;
-      authCubit.login(state.username, state.password);
+      authCubit.login(state.username, state.password, false);
       if (authCubit.state is AuthLoggedIn) {
         directoryCubit
             .navigateToDirectory((authCubit.state as AuthLoggedIn).username);

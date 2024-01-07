@@ -1,4 +1,4 @@
-use crate::models::user::User;
+use crate::models::user::{User, UserInfo};
 use async_trait::async_trait;
 // ez az error masra van mint amire nekem kell
 use futures::stream::{StreamExt, TryStreamExt};
@@ -17,7 +17,6 @@ pub struct MongoUserRepository {
 
 impl MongoUserRepository {
     pub async fn new(mongodb_uri: &str) -> Self {
-        // this should come from env variable
         // replace unwraps with expect
         let client_options = mongodb::options::ClientOptions::parse(mongodb_uri)
             .await
@@ -85,10 +84,18 @@ impl UserRepository for MongoUserRepository {
         }
     }
 
-    async fn get_user(&self, username: &str) -> Option<User> {
-        self.user_collection
+    async fn get_user_info(&self, username: &str) -> UserInfo {
+        let user = self
+            .user_collection
             .find_one(doc! { "username": username }, None)
             .await
-            .expect("MongoDB error when getting user.")
+            .expect("MongoDB error when getting user.");
+
+        UserInfo {
+            username: username.clone().to_owned(),
+            space_taken: 0,
+            files_uploaded: 0,
+            // profile_picture: "",
+        }
     }
 }
